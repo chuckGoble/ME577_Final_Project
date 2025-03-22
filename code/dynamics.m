@@ -13,7 +13,7 @@ cartFriction = 0.25;
 u = 0;
 
 % Define Sim Time
-tSpan = 0:1E-3:10;
+tSpan = 0:1E-1:600;
 
 % Use Linear Dynamics Model
 % 0 for nonlinear & 1 for linear
