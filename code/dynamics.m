@@ -20,11 +20,11 @@ tSpan = 0:1E-1:600;
 isLinear = 0;
 
 % Initial State Vector
-state_0 = [0;0;deg2rad(180); deg2rad(15)];
+state_0 = [0; 0; deg2rad(180); deg2rad(0)];
 
 % Solve Differential Equations of Motion
 [t, y] = ode45(@(t, state) invPenCartEoM(t, state, massPen, massCart, lenRod,...
-    cartFriction, grav, u, isLinear), tSpan, state_0);
+    cartFriction, grav, @zeroInput, isLinear), tSpan, state_0);
 
 %% Post Processing
 % Carpet Plot
@@ -79,6 +79,9 @@ function [dState] = invPenCartEoM(t, state, massPen, massCart, lenRod,...
 % -------
 % dState : 4x1 array of double
 %   Time derivative of state vector
+
+    % Evaluation the input function u(t)
+    u = feval(u, t);
 
     % Helper Var
     if linFlag

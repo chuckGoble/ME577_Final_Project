@@ -10,9 +10,9 @@ close all; clear; clc;
 
 %% Break Linear Assumption
 
-%% Stability
+%% Stability -> HW 4 type of analysis
 
-%% Controlability
+%% Controlability -> HW 5 type of analysis
 
 %% PID Controller
 
