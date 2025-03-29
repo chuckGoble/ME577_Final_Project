@@ -90,7 +90,15 @@ xlabel('Time [sec]')
 ylabel('Impulse Response')
 
 %% General Response
-%y = lsim(sys, u, t);
+tGeneralResponse = 0:1E-3:10;
+omega = 2*pi;
+uGeneralResponse = sin(omega*tGeneralResponse);
+yGeneralResponse = lsim(linSys, uGeneralResponse, tGeneralResponse);
+figure()
+plot(tGeneralResponse, yGeneralResponse);
+grid on
+xlabel('Time [sec]')
+ylabel('General Response')
 
 %% Pole Placement
 linSysPole = pole(linSys);
