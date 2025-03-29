@@ -11,9 +11,9 @@ b = 0.1;%0.25;
 g = 9.8;
 I = (1./3).*m.*L.*L;
 
-%% NonLinear EOM Simulation
+%% NonLinear EOM Simulation - Newtonian Dynamics Model
 
-%% Linear EOM Simulation
+%% Linear EOM Simulation - Newtonian Dynamics Model
 denom = (I.*(M+m)) + (M.*m.*(L.^2));
 A11 = 1;
 A22 = (-1.*(I+(m.*(L.^2))).*b)./denom;
@@ -44,9 +44,11 @@ C(2,3) = 1;
 % D Matrix
 D = zeros(2,1);
 
+% Create a Matlab State Space Model
 linSys = ss(A,B,C,D);
 
 %% Break Linear Assumption
+% Show IC's vs Time where linear assumptions break
 
 %% Stability -> HW 4 type of analysis
 [eigValues, eigVectors] = eig(A);
