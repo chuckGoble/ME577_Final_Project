@@ -101,7 +101,9 @@ xlabel('Time [sec]')
 ylabel('General Response')
 
 %% Pole Placement
+% Source: https://www.mathworks.com/help/control/ref/place.html
 linSysPole = pole(linSys);
+[K, prec] = place(A,B,p);
 
 %% PID Controller
 C = pidtune(sys,'PID');
