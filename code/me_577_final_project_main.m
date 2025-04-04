@@ -51,7 +51,7 @@ linSys = ss(A,B,C,D);
 % Show IC's vs Time where linear assumptions break
 
 %% Stability -> HW 4 type of analysis
-[eigValues, eigVectors] = eig(A);
+[eigVectors, eigValues] = eig(A);
 isLinSysStable = isstable(linSys);
 
 %% Controlability -> HW 5 type of analysis
@@ -65,51 +65,71 @@ Q = [C;...
     C*A*A*A];
 rankOfQ = rank(Q);
 
-%% Initial Condition Response
-[yIc,tIc] = initial(linSys, IC);
-figure()
-plot(tIc, yIc);
-grid on
-xlabel('Time [sec]')
-ylabel('Initial Condition Response')
-
-%% Step Response
-[yStep,tStep] = step(linSys);
-%stepInfo = stepinfo(linSys); -> only works for stable system needs to
-%reach steady state
-figure()
-plot(tStep, yStep);
-grid on
-xlabel('Time [sec]')
-ylabel('Step Response')
-
-%% Impulse Response
-[yImpulse, tImpulse] = impulse(linSys);
-figure()
-plot(tImpulse, yImpulse);
-grid on
-xlabel('Time [sec]')
-ylabel('Impulse Response')
-
-%% General Response
-tGeneralResponse = 0:1E-3:10;
-omega = 2*pi;
-uGeneralResponse = sin(omega*tGeneralResponse);
-yGeneralResponse = lsim(linSys, uGeneralResponse, tGeneralResponse);
-figure()
-plot(tGeneralResponse, yGeneralResponse);
-grid on
-xlabel('Time [sec]')
-ylabel('General Response')
+% %% Initial Condition Response
+% [yIc,tIc] = initial(linSys, IC);
+% figure()
+% plot(tIc, yIc);
+% grid on
+% xlabel('Time [sec]')
+% ylabel('Initial Condition Response')
+% 
+% %% Step Response
+% [yStep,tStep] = step(linSys);
+% %stepInfo = stepinfo(linSys); -> only works for stable system needs to
+% %reach steady state
+% figure()
+% plot(tStep, yStep);
+% grid on
+% xlabel('Time [sec]')
+% ylabel('Step Response')
+% 
+% %% Impulse Response
+% [yImpulse, tImpulse] = impulse(linSys);
+% figure()
+% plot(tImpulse, yImpulse);
+% grid on
+% xlabel('Time [sec]')
+% ylabel('Impulse Response')
+% 
+% %% General Response
+% tGeneralResponse = 0:1E-3:10;
+% omega = 2*pi;
+% uGeneralResponse = sin(omega*tGeneralResponse);
+% yGeneralResponse = lsim(linSys, uGeneralResponse, tGeneralResponse);
+% figure()
+% plot(tGeneralResponse, yGeneralResponse);
+% grid on
+% xlabel('Time [sec]')
+% ylabel('General Response')
 
 %% Pole Placement
 % Source: https://www.mathworks.com/help/control/ref/place.html
 linSysPole = pole(linSys);
+wn = 1;
+eqn = [1, 2.1, 3.4, 2.7.*wn, wn.^2];
+%p = roots(eqn)
+%p = [-3; -4; -5; -6];
+p = 100.*[-3; -4; -5; -6];
+%p = [-0.2; -0.21; -0.22; -0.23];
 [K, prec] = place(A,B,p);
+closeLoopA = A - (B*K);
+closeLoopSys = ss(closeLoopA, B, C, D);
+
+figure(1);
+hold on
+%step(linSys)
+step(closeLoopSys)
+grid on
+
+stepinfo(closeLoopSys)
+
 
 %% PID Controller
-C = pidtune(sys,'PID');
+%C = pidtune(sys,'PID');
 
 %% LQR Controller
 
 %% System Response
+
+% y = lsim(sys,u,t,IC)
+% https://www.mathworks.com/help/control/ref/dynamicsystem.lsim.html
