@@ -263,6 +263,14 @@ grid on
 xlabel('Time [s]')
 ylabel('Angle Rate [deg/sec]')
 
+%% Responses to add
+% Ramp
+% Triangle
+% Saw tooth
+% low freq sine
+% high freq sine
+% low + high freq sine
+
 %% Controller Comparison Response
 % These plots only show the comparison of the Pole Placement Method and LQR
 % Method for the Close-Loop Control
