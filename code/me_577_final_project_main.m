@@ -108,7 +108,6 @@ desPO = 10;
 tSettle = 1;
 inputPercent = 2;
 zeta = (-1*log(desPO./100))/((pi.^2) + (desPO./100));
-%zeta = 0.591328;
 wn = (-1*log(inputPercent./100))./(tSettle.*zeta);
 % Source: https://www.mathworks.com/help/control/ref/place.html
 linSysPole = pole(linSys);
@@ -118,24 +117,20 @@ stableP = p(real(p) == min(real(p)));
 p = [stableP(1); stableP(2); 5*min(real(stableP)); 10*min(real(stableP))];
 [K, prec] = place(A,B,p);
 closeLoopA = A - (B*K);
-closeLoopSys = ss(closeLoopA, B, C, D);
+closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
 
 figure(1);
 hold on
-step(closeLoopSys)
+step(closeLoopSysPolePlace)
 grid on
 title('Unit Step Input')
-stepinfo(closeLoopSys)
+stepinfo(closeLoopSysPolePlace)
 
 figure(2);
 hold on
-impulse(closeLoopSys)
+impulse(closeLoopSysPolePlace)
 title('Unit Impulse Input')
 grid on
-
-
-%% PID Controller
-%C = pidtune(sys,'PID');
 
 %% LQR Controller
 
