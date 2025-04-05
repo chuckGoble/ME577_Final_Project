@@ -40,6 +40,7 @@ B(4,1) = B41;
 C = zeros(2, 4);
 C(1,1) = 1;
 C(2,3) = 1;
+%C = eye(4);
 
 % D Matrix
 D = zeros(2,1);
@@ -103,25 +104,34 @@ rankOfQ = rank(Q);
 % ylabel('General Response')
 
 %% Pole Placement
+desPO = 10;
+tSettle = 1;
+inputPercent = 2;
+zeta = (-1*log(desPO./100))/((pi.^2) + (desPO./100));
+%zeta = 0.591328;
+wn = (-1*log(inputPercent./100))./(tSettle.*zeta);
 % Source: https://www.mathworks.com/help/control/ref/place.html
 linSysPole = pole(linSys);
-wn = 1;
 eqn = [1, 2.1, 3.4, 2.7.*wn, wn.^2];
-%p = roots(eqn)
-%p = [-3; -4; -5; -6];
-p = 100.*[-3; -4; -5; -6];
-%p = [-0.2; -0.21; -0.22; -0.23];
+p = roots(eqn);
+stableP = p(real(p) == min(real(p)));
+p = [stableP(1); stableP(2); 5*min(real(stableP)); 10*min(real(stableP))];
 [K, prec] = place(A,B,p);
 closeLoopA = A - (B*K);
 closeLoopSys = ss(closeLoopA, B, C, D);
 
 figure(1);
 hold on
-%step(linSys)
 step(closeLoopSys)
 grid on
-
+title('Unit Step Input')
 stepinfo(closeLoopSys)
+
+figure(2);
+hold on
+impulse(closeLoopSys)
+title('Unit Impulse Input')
+grid on
 
 
 %% PID Controller
