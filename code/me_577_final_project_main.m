@@ -1,13 +1,31 @@
+% Main script for ME 577 Group Final Project
 close all; clear; clc;
 
 %% User Inputs
-IC = [0; 0; deg2rad(180); 0];
+% Initial Conditions
+ICs = [0; 0; deg2rad(180); 0];
+
+% Controller Design Parameter: Percent Overshoot
+desPO = 10;
+
+% Controller Design Parameter: Settling Time
+tSettle = 1;
+
+% Controller Design Parameter: Steady State Metric
+inputPercent = 2;
+
+% Controller Design Parameter: Pole Placement Scalar Multiplier
+poleScalarOne = 5;
+poleScalarTwo = 10;
+
+% Sim Time Vector
+timeVec = 0:1E-3:2;
 
 %% System Definition
-m = 0.2;%0.35;
-M = 0.5;%2.2;
-L = 0.3;%1.3;
-b = 0.1;%0.25;
+m = 0.35;
+M = 2.2;
+L = 1.3;
+b = 0.25;
 g = 9.8;
 I = (1./3).*m.*L.*L;
 
@@ -37,13 +55,14 @@ B(2,1) = B21;
 B(4,1) = B41;
 
 % C Matrix
-C = zeros(2, 4);
-C(1,1) = 1;
-C(2,3) = 1;
-%C = eye(4);
+%C = zeros(2, 4);
+%C(1,1) = 1;
+%C(2,3) = 1;
+C = eye(4);
 
 % D Matrix
-D = zeros(2,1);
+%D = zeros(2,1);
+D = zeros(4, 1);
 
 % Create a Matlab State Space Model
 linSys = ss(A,B,C,D);
@@ -66,7 +85,7 @@ Q = [C;...
     C*A*A*A];
 rankOfQ = rank(Q);
 
-% %% Initial Condition Response
+%% Initial Condition Response
 % [yIc,tIc] = initial(linSys, IC);
 % figure()
 % plot(tIc, yIc);
@@ -104,37 +123,202 @@ rankOfQ = rank(Q);
 % ylabel('General Response')
 
 %% Pole Placement
-desPO = 10;
-tSettle = 1;
-inputPercent = 2;
 zeta = (-1*log(desPO./100))/((pi.^2) + (desPO./100));
 wn = (-1*log(inputPercent./100))./(tSettle.*zeta);
-% Source: https://www.mathworks.com/help/control/ref/place.html
 linSysPole = pole(linSys);
 eqn = [1, 2.1, 3.4, 2.7.*wn, wn.^2];
 p = roots(eqn);
 stableP = p(real(p) == min(real(p)));
-p = [stableP(1); stableP(2); 5*min(real(stableP)); 10*min(real(stableP))];
+p = [stableP(1); stableP(2);...
+    poleScalarOne*min(real(stableP));...
+    poleScalarTwo*min(real(stableP))];
 [K, prec] = place(A,B,p);
 closeLoopA = A - (B*K);
 closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
 
-figure(1);
+%% LQR Controller
+
+%% Controller Design Plots
+% Controller Design Plots
+figure();
 hold on
 step(closeLoopSysPolePlace)
-grid on
 title('Unit Step Input')
-stepinfo(closeLoopSysPolePlace)
+grid on
 
-figure(2);
+figure();
 hold on
 impulse(closeLoopSysPolePlace)
 title('Unit Impulse Input')
 grid on
 
-%% LQR Controller
-
 %% System Response
+% This analysis shows the comparison of the Pole Placement Method and LQR
+% Method for the Close-Loop Controller with the Disturbance Plot
 
-% y = lsim(sys,u,t,IC)
-% https://www.mathworks.com/help/control/ref/dynamicsystem.lsim.html
+% Step Response
+unitStepInput = genStepInput(timeVec, 1, 1);
+[yOpenStep, tOpenStep] = lsim(linSys, unitStepInput, timeVec, ICs);
+[yClosePoleStep, tClosePoleStep] = lsim(closeLoopSysPolePlace, unitStepInput,...
+    timeVec, ICs);
+
+figure();
+title('Step Response')
+subplot(4, 1, 1)
+hold on
+plot(tOpenStep, yOpenStep(:, 1), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 1), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Position [m]')
+
+subplot(4, 1, 2)
+hold on
+plot(tOpenStep, yOpenStep(:, 2), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 2), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Velocity [m/s]')
+
+subplot(4, 1, 3)
+hold on
+plot(tOpenStep, yOpenStep(:, 3), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle [deg]')
+
+subplot(4, 1, 4)
+hold on
+plot(tOpenStep, yOpenStep(:, 3), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle Rate [deg/sec]')
+
+% Impule Response
+impulseInput = genImpulseInput(timeVec, 1, 1);
+[yOpenImpulse, tOpenImpulse] = lsim(linSys, impulseInput, timeVec, ICs);
+[yClosePoleImpulse, tClosePoleImpulse] = lsim(closeLoopSysPolePlace, impulseInput,...
+    timeVec, ICs);
+
+figure();
+title('Step Response')
+subplot(4, 1, 1)
+hold on
+plot(tOpenImpulse, yOpenImpulse(:, 1), 'k')
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 1), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Position [m]')
+
+subplot(4, 1, 2)
+hold on
+plot(tOpenImpulse, yOpenImpulse(:, 2), 'k')
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 2), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Velocity [m/s]')
+
+subplot(4, 1, 3)
+hold on
+plot(tOpenImpulse, yOpenImpulse(:, 3), 'k')
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle [deg]')
+
+subplot(4, 1, 4)
+hold on
+plot(tOpenImpulse, yOpenImpulse(:, 3), 'k')
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle Rate [deg/sec]')
+
+%% Controller Comparison Response
+% These plots only show the comparison of the Pole Placement Method and LQR
+% Method for the Close-Loop Control
+
+% Step Plot
+figure();
+title('Step Response')
+subplot(4, 1, 1)
+hold on
+plot(tOpenStep, yOpenStep(:, 1), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 1), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Position [m]')
+
+subplot(4, 1, 2)
+hold on
+plot(tOpenStep, yOpenStep(:, 2), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 2), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Velocity [m/s]')
+
+subplot(4, 1, 3)
+hold on
+plot(tOpenStep, yOpenStep(:, 3), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle [deg]')
+
+subplot(4, 1, 4)
+hold on
+plot(tOpenStep, yOpenStep(:, 3), 'k')
+plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle Rate [deg/sec]')
+
+% Impule Plot
+figure();
+title('Step Response')
+subplot(4, 1, 1)
+hold on
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 1), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Position [m]')
+
+subplot(4, 1, 2)
+hold on
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 2), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Velocity [m/s]')
+
+subplot(4, 1, 3)
+hold on
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle [deg]')
+
+subplot(4, 1, 4)
+hold on
+plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
+hold off
+grid on
+xlabel('Time [s]')
+ylabel('Angle Rate [deg/sec]')
+
