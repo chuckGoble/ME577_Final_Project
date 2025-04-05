@@ -21,6 +21,10 @@ poleScalarTwo = 10;
 % Sim Time Vector
 timeVec = 0:1E-3:2;
 
+% System Response Parameters
+stepAmp = 1;
+impulseAmp = 1;
+
 %% System Definition
 m = 0.35;
 M = 2.2;
@@ -157,9 +161,9 @@ grid on
 % Method for the Close-Loop Controller with the Disturbance Plot
 
 % Step Response
-unitStepInput = genStepInput(timeVec, 1, 1);
+stepInput = genStepInput(timeVec, 1, stepAmp);
 [yOpenStep, tOpenStep] = lsim(linSys, unitStepInput, timeVec, ICs);
-[yClosePoleStep, tClosePoleStep] = lsim(closeLoopSysPolePlace, unitStepInput,...
+[yClosePoleStep, tClosePoleStep] = lsim(closeLoopSysPolePlace, stepInput,...
     timeVec, ICs);
 
 figure();
@@ -201,7 +205,7 @@ xlabel('Time [s]')
 ylabel('Angle Rate [deg/sec]')
 
 % Impule Response
-impulseInput = genImpulseInput(timeVec, 1, 1);
+impulseInput = genImpulseInput(timeVec, 1, impulseAmp);
 [yOpenImpulse, tOpenImpulse] = lsim(linSys, impulseInput, timeVec, ICs);
 [yClosePoleImpulse, tClosePoleImpulse] = lsim(closeLoopSysPolePlace, impulseInput,...
     timeVec, ICs);
