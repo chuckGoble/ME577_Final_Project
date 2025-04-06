@@ -145,13 +145,13 @@ closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
 
 %% Controller Design Plots
 % Controller Design Plots
-figure();
+figure(1);
 hold on
 step(closeLoopSysPolePlace)
 title('Unit Step Input')
 grid on
 
-figure();
+figure(2);
 hold on
 impulse(closeLoopSysPolePlace)
 title('Unit Impulse Input')
@@ -167,14 +167,14 @@ stepInput = genStepInput(timeVec, stepTime, stepAmp);
 [yClosePoleStep, tClosePoleStep] = lsim(closeLoopSysPolePlace, stepInput,...
     timeVec, ICs);
 
-figure()
+figure(3)
 scatter(timeVec, stepInput)
 grid on
 xlabel('Time [sec]')
 ylabel('Response')
 title('Step Response')
 
-figure();
+figure(4);
 title('Step Response')
 subplot(4, 1, 1)
 hold on
@@ -218,14 +218,14 @@ impulseInput = genImpulseInput(timeVec, 1, impulseAmp);
 [yClosePoleImpulse, tClosePoleImpulse] = lsim(closeLoopSysPolePlace, impulseInput,...
     timeVec, ICs);
 
-figure()
+figure(5)
 scatter(timeVec, impulseInput)
 grid on
 xlabel('Time [sec]')
 ylabel('Response')
 title('Impulse Response')
 
-figure();
+figure(6);
 title('Step Response')
 subplot(4, 1, 1)
 hold on
@@ -276,7 +276,7 @@ ylabel('Angle Rate [deg/sec]')
 % Method for the Close-Loop Control
 
 % Step Plot
-figure();
+figure(7);
 title('Step Response')
 subplot(4, 1, 1)
 hold on
@@ -315,7 +315,7 @@ xlabel('Time [s]')
 ylabel('Angle Rate [deg/sec]')
 
 % Impule Plot
-figure();
+figure(8);
 title('Step Response')
 subplot(4, 1, 1)
 hold on
