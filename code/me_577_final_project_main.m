@@ -3,7 +3,7 @@ close all; clear; clc;
 
 %% User Inputs
 % Initial Conditions
-ICs = [0; 0; deg2rad(180); 0];
+ICs = [0; 0; deg2rad(0); 0];
 
 % Controller Design Parameter: Percent Overshoot
 desPO = 10;
@@ -19,65 +19,69 @@ poleScalarOne = 5;
 poleScalarTwo = 10;
 
 % Sim Time Vector
-timeVec = 0:1E-3:2;
+timeVec = 0:1E-3:3;
 
 % System Response Parameters
-stepAmp = 1;
-stepTime = 1;
-impulseAmp = 1;
+pertTime = 1;
+stepAmp = 100;
+nonUnitImpulseAmp = 100;
 
-%% System Definition
+%% System Definition -- Constants
 m = 0.35;
 M = 2.2;
 L = 1.3;
 b = 0.25;
 g = 9.8;
-I = (1./3).*m.*L.*L;
+
+shift = [0, 0, pi/2, 0];
 
 %% NonLinear EOM Simulation - Newtonian Dynamics Model
+% TODO: Add nonlinear ode45 simulation
+% TODO: Show that the nonlinear system is not stable such that it goes
+% unstable due to floating point error integration error.
 
 %% Linear EOM Simulation - Newtonian Dynamics Model
-denom = (I.*(M+m)) + (M.*m.*(L.^2));
-A11 = 1;
-A22 = (-1.*(I+(m.*(L.^2))).*b)./denom;
-A23 = ((m.^2).*g.*(L.^2))./denom;
-A34 = 1;
-A42 = -1.*(m.*L.*b)./denom;
-A43 = (m.*g.*L.*(M+m))./denom;
+% New Dynamics Model
 A = zeros(4);
-A(1,2) = A11;
-A(2,2) = A22;
-A(2,3) = A23;
-A(3,4) = A34;
-A(4,2) = A42;
-A(4,3) = A43;
+A(1,2) = 1;
+A(2,2) = (b)./((2*m)+M);
+A(2,3) = (m*g)./((2*m)+M);
+A(3,4) = 1;
+A(4,2) = (-1.*b)./(L.*((2*m)+M));
+A(4,3) = (g./L) - ((m*g)./((2*m)+M));
 
 % B Matrix
-B21 = (I+(m.*(L.^2)))./denom;
-B41 = (m.*L)/denom;
 B = zeros(4,1);
-B(2,1) = B21;
-B(4,1) = B41;
+B(2,1) = (1)./((2*m)+M);
+B(4,1) = (-1)./(L.*((2*m)+M));
 
 % C Matrix
-%C = zeros(2, 4);
-%C(1,1) = 1;
-%C(2,3) = 1;
 C = eye(4);
 
 % D Matrix
-%D = zeros(2,1);
 D = zeros(4, 1);
 
-% Create a Matlab State Space Model
+% % Create a Matlab State Space Model
 linSys = ss(A,B,C,D);
 
-%% Break Linear Assumption
-% Show IC's vs Time where linear assumptions break
+%%  Initial Conditions Simulation
+[yInitial, tInitial] = initial(linSys, ICs, timeVec);
+yInitial = moveOutput(yInitial, shift);
+plotStates(yInitial, tInitial, 'Uncontrolled Initial Conditions Simulation');
+
+%%  Unit Step Input Simulation
+[yStep, tStep] = step(linSys, timeVec);
+yStep = moveOutput(yStep, shift);
+plotStates(yStep, tStep, 'Uncontrolled Unit Step Simulation');
+
+%%  Unit Impulse Input Simulation
+[yImpulse, tImpulse] = impulse(linSys, timeVec);
+yImpulse = moveOutput(yImpulse, shift);
+plotStates(yImpulse, tImpulse, 'Uncontrolled Unit Impulse Simulation');
 
 %% Stability -> HW 4 type of analysis
 [eigVectors, eigValues] = eig(A);
-isLinSysStable = isstable(linSys);
+linSysPole = pole(linSys);
 
 %% Controlability -> HW 5 type of analysis
 P = [B, A*B, A*A*B, A*A*A*B];
@@ -90,262 +94,129 @@ Q = [C;...
     C*A*A*A];
 rankOfQ = rank(Q);
 
-%% Initial Condition Response
-% [yIc,tIc] = initial(linSys, IC);
-% figure()
-% plot(tIc, yIc);
-% grid on
-% xlabel('Time [sec]')
-% ylabel('Initial Condition Response')
-% 
-% %% Step Response
-% [yStep,tStep] = step(linSys);
-% %stepInfo = stepinfo(linSys); -> only works for stable system needs to
-% %reach steady state
-% figure()
-% plot(tStep, yStep);
-% grid on
-% xlabel('Time [sec]')
-% ylabel('Step Response')
-% 
-% %% Impulse Response
-% [yImpulse, tImpulse] = impulse(linSys);
-% figure()
-% plot(tImpulse, yImpulse);
-% grid on
-% xlabel('Time [sec]')
-% ylabel('Impulse Response')
-% 
-% %% General Response
-% tGeneralResponse = 0:1E-3:10;
-% omega = 2*pi;
-% uGeneralResponse = sin(omega*tGeneralResponse);
-% yGeneralResponse = lsim(linSys, uGeneralResponse, tGeneralResponse);
-% figure()
-% plot(tGeneralResponse, yGeneralResponse);
-% grid on
-% xlabel('Time [sec]')
-% ylabel('General Response')
-
 %% Pole Placement
-zeta = (-1*log(desPO./100))/((pi.^2) + (desPO./100));
+zeta = (-1*log(desPO./100))/(sqrt((pi.^2) + (desPO./100)));
 wn = (-1*log(inputPercent./100))./(tSettle.*zeta);
-linSysPole = pole(linSys);
 eqn = [1, 2.1, 3.4, 2.7.*wn, wn.^2];
 p = roots(eqn);
 stableP = p(real(p) == min(real(p)));
 p = [stableP(1); stableP(2);...
-    poleScalarOne*min(real(stableP));...
-    poleScalarTwo*min(real(stableP))];
-[K, prec] = place(A,B,p);
+    floor(poleScalarOne*min(real(stableP)));...
+    floor(poleScalarTwo*min(real(stableP)))];
+
+[K, prec] = place(A, B, p);
 closeLoopA = A - (B*K);
 closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
 
+%% Pole Placement Controller Design Plots
+%  Initial Conditions Simulation
+[yInitialPole, tInitialPole] = initial(closeLoopSysPolePlace, ICs, timeVec);
+yInitialPole = moveOutput(yInitialPole, shift);
+plotStates(yInitialPole, tInitialPole, 'Pole Placement Controller Initial Conditions Simulation');
+
+% Unit Step Input Simulation
+[yStepPole, tStepPole] = step(closeLoopSysPolePlace, timeVec);
+yStepPole = moveOutput(yStepPole, shift);
+plotStates(yStepPole, tStepPole, 'Pole Placement Controller Unit Step Simulation');
+
+%  Unit Impulse Input Simulation
+[yImpulsePole, tImpulsePole] = impulse(closeLoopSysPolePlace, timeVec);
+yImpulsePole = moveOutput(yImpulsePole, shift);
+plotStates(yImpulsePole, tImpulsePole, 'Pole Placement Controller Unit Impulse Simulation');
+
+%% Simulink -- Integral Error Control
+% Define new A and B matrices
+cIEC = [1 0 0 0];
+Ahat = [A zeros(length(A),1); -cIEC 0];
+Bhat = [B; 0];
+
+% Check controllabilty of new system. Rank = 5 means that thes system
+% is % fully state controllable.
+P = [A, B; -cIEC, 0];
+rank(P);
+
+% Define desired eigenvalues for new 5th order system. Eigenvalues were
+% defined from values that result in a 1 second settling time
+eigDesired = [-6.4480,-4.1104+6.3142i,-4.1104-6.3142i,...
+    -5.9268+3.0813i,-5.9268-3.0813i];
+
+% Use place command to calculate gain matrix to acheive desired poles
+gainMatrix = place(Ahat,Bhat,eigDesired);
+
+% State feedback gain matrix
+K = gainMatrix(1:4);
+
+% Integral error tracking gain value
+KI = -gainMatrix(5);
+
+% Define desired cart position
+cartPosition = 5;
+
+% Define periodic input disturbance amplitude and frequency
+periodicDisturbanceAmp = 2;
+periodicDisturbanceFreq = 10;
+
+% Define impulse input disturbance amplitude
+impulseAmp = 0;
+
+% Run Simulink model
+out = sim('stateFeedbackIntegralControl.slx');
+
+figure()
+subplot(2, 1, 1)
+hold on
+plot(out.tout,out.command,'--k')
+plot(out.tout,out.position,'-r')
+hold off
+grid on
+legend("Commanded","Cart")
+xlabel('Time [sec]')
+ylabel('Displacement [m]')
+
+subplot(2, 1, 2)
+hold on
+plot(out.tout, 90.*ones(size(out.theta, 1), 1),'--k')
+plot(out.tout, rad2deg(out.theta + pi./2),'r')
+hold off
+grid on
+legend("Equilibrium","Cart")
+xlabel('Time [sec]')
+ylabel('Angle [deg]')
+
 %% LQR Controller
 
-%% Controller Design Plots
-% Controller Design Plots
-figure(1);
-hold on
-step(closeLoopSysPolePlace)
-title('Unit Step Input')
-grid on
+%% LQR Controller Design Plots
 
-figure(2);
-hold on
-impulse(closeLoopSysPolePlace)
-title('Unit Impulse Input')
-grid on
+%% System Response Analysis
+% Non Unit Impulse
+nonUnitImp = genImpulseInput(timeVec, nonUnitImpulseAmp, pertTime);
+[yImpPole, tImpPole] = lsim(closeLoopSysPolePlace, nonUnitImp, timeVec);
+yImpPole = moveOutput(yImpPole, shift);
+plotStates(yImpPole, tImpPole, 'Test Big Impulse Plot');
 
-%% System Response
-% This analysis shows the comparison of the Pole Placement Method and LQR
-% Method for the Close-Loop Controller with the Disturbance Plot
+% Non Unit Step
+nonUnitStep = genStepInput(timeVec, stepAmp, pertTime);
+[yStepPole, tStepPole] = lsim(closeLoopSysPolePlace, nonUnitStep, timeVec);
+yStepPole = moveOutput(yStepPole, shift);
+plotStates(yStepPole, tStepPole, 'Test Big Step Plot');
 
-% Step Response
-stepInput = genStepInput(timeVec, stepTime, stepAmp);
-[yOpenStep, tOpenStep] = lsim(linSys, stepInput, timeVec, ICs);
-[yClosePoleStep, tClosePoleStep] = lsim(closeLoopSysPolePlace, stepInput,...
-    timeVec, ICs);
-
-figure(3)
-scatter(timeVec, stepInput)
-grid on
-xlabel('Time [sec]')
-ylabel('Response')
-title('Step Response')
-
-figure(4);
-title('Step Response')
-subplot(4, 1, 1)
-hold on
-plot(tOpenStep, yOpenStep(:, 1), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 1), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Position [m]')
-
-subplot(4, 1, 2)
-hold on
-plot(tOpenStep, yOpenStep(:, 2), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 2), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Velocity [m/s]')
-
-subplot(4, 1, 3)
-hold on
-plot(tOpenStep, yOpenStep(:, 3), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle [deg]')
-
-subplot(4, 1, 4)
-hold on
-plot(tOpenStep, yOpenStep(:, 3), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle Rate [deg/sec]')
-
-% Impule Response
-impulseInput = genImpulseInput(timeVec, 1, impulseAmp);
-[yOpenImpulse, tOpenImpulse] = lsim(linSys, impulseInput, timeVec, ICs);
-[yClosePoleImpulse, tClosePoleImpulse] = lsim(closeLoopSysPolePlace, impulseInput,...
-    timeVec, ICs);
-
-figure(5)
-scatter(timeVec, impulseInput)
-grid on
-xlabel('Time [sec]')
-ylabel('Response')
-title('Impulse Response')
-
-figure(6);
-title('Step Response')
-subplot(4, 1, 1)
-hold on
-plot(tOpenImpulse, yOpenImpulse(:, 1), 'k')
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 1), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Position [m]')
-
-subplot(4, 1, 2)
-hold on
-plot(tOpenImpulse, yOpenImpulse(:, 2), 'k')
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 2), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Velocity [m/s]')
-
-subplot(4, 1, 3)
-hold on
-plot(tOpenImpulse, yOpenImpulse(:, 3), 'k')
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle [deg]')
-
-subplot(4, 1, 4)
-hold on
-plot(tOpenImpulse, yOpenImpulse(:, 3), 'k')
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle Rate [deg/sec]')
-
-%% Responses to add
 % Ramp
-% Triangle
-% Saw tooth
+ramp = genRampInput(timeVec, pertTime);
+[yRampPole, tRampPole] = lsim(closeLoopSysPolePlace, ramp, timeVec);
+yRampPole = moveOutput(yRampPole, shift);
+plotStates(yRampPole, tRampPole, 'Test Ramp Plot');
+
 % low freq sine
+lowFreqSine = genSinusodialInput(timeVec, pertTime, 5, 100);
+[ySinePole, tSinePole] = lsim(closeLoopSysPolePlace, lowFreqSine, timeVec);
+ySinePole = moveOutput(ySinePole, shift);
+plotStates(ySinePole, tSinePole, 'Test Low Freq Sine Plot');
+
 % high freq sine
-% low + high freq sine
+highFreqSine = genSinusodialInput(timeVec, pertTime, 5, 1000);
+[ySinePole2, tSinePole2] = lsim(closeLoopSysPolePlace, highFreqSine, timeVec);
+ySinePole2 = moveOutput(ySinePole2, shift);
+plotStates(ySinePole2, tSinePole2, 'Test High Freq Sine Plot');
 
-%% Controller Comparison Response
-% These plots only show the comparison of the Pole Placement Method and LQR
-% Method for the Close-Loop Control
-
-% Step Plot
-figure(7);
-title('Step Response')
-subplot(4, 1, 1)
-hold on
-plot(tOpenStep, yOpenStep(:, 1), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 1), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Position [m]')
-
-subplot(4, 1, 2)
-hold on
-plot(tOpenStep, yOpenStep(:, 2), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 2), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Velocity [m/s]')
-
-subplot(4, 1, 3)
-hold on
-plot(tOpenStep, yOpenStep(:, 3), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle [deg]')
-
-subplot(4, 1, 4)
-hold on
-plot(tOpenStep, yOpenStep(:, 3), 'k')
-plot(tClosePoleStep, yClosePoleStep(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle Rate [deg/sec]')
-
-% Impule Plot
-figure(8);
-title('Step Response')
-subplot(4, 1, 1)
-hold on
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 1), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Position [m]')
-
-subplot(4, 1, 2)
-hold on
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 2), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Velocity [m/s]')
-
-subplot(4, 1, 3)
-hold on
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle [deg]')
-
-subplot(4, 1, 4)
-hold on
-plot(tClosePoleImpulse, yClosePoleImpulse(:, 3), 'b')
-hold off
-grid on
-xlabel('Time [s]')
-ylabel('Angle Rate [deg/sec]')
-
+%% System Response Analysis Plots
+% TODO: Fill in this section -> make a function that plots both Pole & LQR
