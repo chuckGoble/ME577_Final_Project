@@ -67,17 +67,17 @@ linSys = ss(A,B,C,D);
 %%  Initial Conditions Simulation
 [yInitial, tInitial] = initial(linSys, ICs, timeVec);
 yInitial = moveOutput(yInitial, shift);
-plotStates(yInitial, tInitial, 'Uncontrolled Initial Conditions Simulation');
+%plotStates(yInitial, tInitial, 'Uncontrolled Initial Conditions Simulation');
 
 %%  Unit Step Input Simulation
 [yStep, tStep] = step(linSys, timeVec);
 yStep = moveOutput(yStep, shift);
-plotStates(yStep, tStep, 'Uncontrolled Unit Step Simulation');
+%plotStates(yStep, tStep, 'Uncontrolled Unit Step Simulation');
 
 %%  Unit Impulse Input Simulation
 [yImpulse, tImpulse] = impulse(linSys, timeVec);
 yImpulse = moveOutput(yImpulse, shift);
-plotStates(yImpulse, tImpulse, 'Uncontrolled Unit Impulse Simulation');
+%plotStates(yImpulse, tImpulse, 'Uncontrolled Unit Impulse Simulation');
 
 %% Stability -> HW 4 type of analysis
 [eigVectors, eigValues] = eig(A);
@@ -109,20 +109,15 @@ closeLoopA = A - (B*K);
 closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
 
 %% Pole Placement Controller Design Plots
-%  Initial Conditions Simulation
-[yInitialPole, tInitialPole] = initial(closeLoopSysPolePlace, ICs, timeVec);
-yInitialPole = moveOutput(yInitialPole, shift);
-plotStates(yInitialPole, tInitialPole, 'Pole Placement Controller Initial Conditions Simulation');
-
 % Unit Step Input Simulation
 [yStepPole, tStepPole] = step(closeLoopSysPolePlace, timeVec);
 yStepPole = moveOutput(yStepPole, shift);
-plotStates(yStepPole, tStepPole, 'Pole Placement Controller Unit Step Simulation');
+%plotStates(yStepPole, tStepPole, 'Pole Placement Controller Unit Step Simulation');
 
 %  Unit Impulse Input Simulation
 [yImpulsePole, tImpulsePole] = impulse(closeLoopSysPolePlace, timeVec);
 yImpulsePole = moveOutput(yImpulsePole, shift);
-plotStates(yImpulsePole, tImpulsePole, 'Pole Placement Controller Unit Impulse Simulation');
+%plotStates(yImpulsePole, tImpulsePole, 'Pole Placement Controller Unit Impulse Simulation');
 
 %% Simulink -- Integral Error Control
 % Define new A and B matrices
@@ -165,23 +160,29 @@ out = sim('stateFeedbackIntegralControl.slx');
 figure()
 subplot(2, 1, 1)
 hold on
-plot(out.tout,out.command,'--k')
-plot(out.tout,out.position,'-r')
+plot(out.tout,out.command,'--k', 'Linewidth', 3)
+plot(out.tout,out.position,'-r', 'Linewidth', 3)
 hold off
 grid on
-legend("Commanded","Cart")
-xlabel('Time [sec]')
-ylabel('Displacement [m]')
+legend("Commanded","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
+    'BestOutside')
+xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+ylabel('Displacement [m]', 'fontweight', 'bold', 'fontsize', 14)
+a = get(gca,'XTickLabel');
+set(gca,'XTickLabel', a,'fontsize', 14)
 
 subplot(2, 1, 2)
 hold on
-plot(out.tout, 90.*ones(size(out.theta, 1), 1),'--k')
-plot(out.tout, rad2deg(out.theta + pi./2),'r')
+plot(out.tout, 90.*ones(size(out.theta, 1), 1),'--k', 'Linewidth', 3)
+plot(out.tout, rad2deg(out.theta + pi./2),'r', 'Linewidth', 3)
 hold off
 grid on
-legend("Equilibrium","Cart")
-xlabel('Time [sec]')
-ylabel('Angle [deg]')
+legend("Equilibrium","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
+    'BestOutside')
+xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+ylabel('Angle [deg]', 'fontweight', 'bold', 'fontsize', 14)
+a = get(gca,'XTickLabel');
+set(gca,'XTickLabel', a,'fontsize', 14)
 
 %% LQR Controller
 
