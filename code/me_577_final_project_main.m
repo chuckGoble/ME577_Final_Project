@@ -19,12 +19,15 @@ poleScalarOne = 5;
 poleScalarTwo = 10;
 
 % Sim Time Vector
-timeVec = 0:1E-3:3;
+timeVec = 0:1E-3:100;
 
 % System Response Parameters
 pertTime = 1;
 stepAmp = 100;
 nonUnitImpulseAmp = 100;
+sineAmp = 100;
+sineFreqLow = 100;
+sineFreqHigh = 1000;
 
 %% System Definition -- Constants
 m = 0.35;
@@ -156,68 +159,76 @@ impulseAmp = 0;
 
 % Run Simulink model
 out = sim('stateFeedbackIntegralControl.slx');
-
-figure()
-subplot(2, 1, 1)
-hold on
-plot(out.tout,out.command,'--k', 'Linewidth', 3)
-plot(out.tout,out.position,'-r', 'Linewidth', 3)
-hold off
-grid on
-legend("Commanded","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
-    'BestOutside')
-xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
-ylabel('Displacement [m]', 'fontweight', 'bold', 'fontsize', 14)
-a = get(gca,'XTickLabel');
-set(gca,'XTickLabel', a,'fontsize', 14)
-
-subplot(2, 1, 2)
-hold on
-plot(out.tout, 90.*ones(size(out.theta, 1), 1),'--k', 'Linewidth', 3)
-plot(out.tout, rad2deg(out.theta + pi./2),'r', 'Linewidth', 3)
-hold off
-grid on
-legend("Equilibrium","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
-    'BestOutside')
-xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
-ylabel('Angle [deg]', 'fontweight', 'bold', 'fontsize', 14)
-a = get(gca,'XTickLabel');
-set(gca,'XTickLabel', a,'fontsize', 14)
+%intErrPlot(out);
 
 %% LQR Controller
+lqr_q_mat = zeros(4);
+
+% Grey Wolf Optimizer
+lqr_q_mat(1, 1) = 3.471E6;
+lqr_q_mat(2, 2) = 4.91E3;
+lqr_q_mat(3, 3) = 3.54E-4;
+lqr_q_mat(4, 4) = 1.11E4;
+
+lqr_r = 8779.759;
+
+[lqr_gain, lqr_s, lqr_poles] = lqr(A, B, lqr_q_mat, lqr_r);
+
+closeLoopSysLqr = ss(A-B*lqr_gain, B, C, D);
 
 %% LQR Controller Design Plots
+[yStepLqr, tStepLqr] = step(closeLoopSysLqr, timeVec);
+yStepLqr = moveOutput(yStepLqr, shift);
+%plotStates(yStepLqr, tStepLqr, 'LQR Controller Unit Step Simulation');
+
+[yImpulseLqr, tImpulseLqr] = impulse(closeLoopSysLqr, timeVec);
+yImpulseLqr = moveOutput(yImpulseLqr, shift);
+%plotStates(yImpulseLqr, tImpulseLqr, 'LQR Controller Unit Impulse Simulation');
 
 %% System Response Analysis
 % Non Unit Impulse
 nonUnitImp = genImpulseInput(timeVec, nonUnitImpulseAmp, pertTime);
 [yImpPole, tImpPole] = lsim(closeLoopSysPolePlace, nonUnitImp, timeVec);
 yImpPole = moveOutput(yImpPole, shift);
-plotStates(yImpPole, tImpPole, 'Test Big Impulse Plot');
+[yImpLqr, tImpLqr] = lsim(closeLoopSysLqr, nonUnitImp, timeVec);
+yImpLqr = moveOutput(yImpLqr, shift);
 
 % Non Unit Step
 nonUnitStep = genStepInput(timeVec, stepAmp, pertTime);
 [yStepPole, tStepPole] = lsim(closeLoopSysPolePlace, nonUnitStep, timeVec);
 yStepPole = moveOutput(yStepPole, shift);
-plotStates(yStepPole, tStepPole, 'Test Big Step Plot');
+[yStepLqr, tStepLqr] = lsim(closeLoopSysLqr, nonUnitStep, timeVec);
+yStepLqr = moveOutput(yStepLqr, shift);
 
 % Ramp
 ramp = genRampInput(timeVec, pertTime);
 [yRampPole, tRampPole] = lsim(closeLoopSysPolePlace, ramp, timeVec);
 yRampPole = moveOutput(yRampPole, shift);
-plotStates(yRampPole, tRampPole, 'Test Ramp Plot');
+[yRampLqr, tRampLqr] = lsim(closeLoopSysLqr, ramp, timeVec);
+yRampLqr = moveOutput(yRampLqr, shift);
 
 % low freq sine
-lowFreqSine = genSinusodialInput(timeVec, pertTime, 5, 100);
+lowFreqSine = genSinusodialInput(timeVec, pertTime, sineAmp, sineFreqLow);
 [ySinePole, tSinePole] = lsim(closeLoopSysPolePlace, lowFreqSine, timeVec);
 ySinePole = moveOutput(ySinePole, shift);
-plotStates(ySinePole, tSinePole, 'Test Low Freq Sine Plot');
+[ySineLqr, tSineLqr] = lsim(closeLoopSysLqr, lowFreqSine, timeVec);
+ySineLqr = moveOutput(ySineLqr, shift);
 
 % high freq sine
-highFreqSine = genSinusodialInput(timeVec, pertTime, 5, 1000);
+highFreqSine = genSinusodialInput(timeVec, pertTime, sineAmp, sineFreqHigh);
 [ySinePole2, tSinePole2] = lsim(closeLoopSysPolePlace, highFreqSine, timeVec);
 ySinePole2 = moveOutput(ySinePole2, shift);
-plotStates(ySinePole2, tSinePole2, 'Test High Freq Sine Plot');
+[ySineLqr2, tSineLqr2] = lsim(closeLoopSysLqr, highFreqSine, timeVec);
+ySineLqr2 = moveOutput(ySineLqr2, shift);
 
 %% System Response Analysis Plots
-% TODO: Fill in this section -> make a function that plots both Pole & LQR
+genMultiPlot(tImpPole, yImpPole, 'Pole Placement',...
+    tImpLqr, yImpLqr, 'LQR', 'Non-Unit Impulse Disturbance Simulation')
+genMultiPlot(tStepPole, yStepPole, 'Pole Placement',...
+    tStepLqr, yStepLqr, 'LQR', 'Non-Unit Step Disturbance Simulation')
+genMultiPlot(tRampPole, yRampPole, 'Pole Placement',...
+    tRampLqr, yRampLqr, 'LQR', 'Ramp Disturbance Simulation')
+genMultiPlot(tSinePole, ySinePole, 'Pole Placement',...
+    tSineLqr, ySineLqr, 'LQR', 'Low Frequency Sine Disturbance Simulation')
+genMultiPlot(tSinePole2, ySinePole2, 'Pole Placement',...
+    tSineLqr2, ySineLqr2, 'LQR', 'High Frequency Sine Disturbance Simulation')
