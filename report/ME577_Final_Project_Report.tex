@@ -60,20 +60,27 @@
 
 \newpage
 \section{Introduction}
-The inverted pendulum on a cart problem is an interesting engineering problem for a multitude of reasons. It serves as the basis for both real and surrogate systems. Companies such as Segway\texttrademark have a self-balancing system marketed as a personal transportation device for urban environments. In this instance, the inverted pendulum on a cart has been actualized into a physical product and sold to the masses. However, the more common realization of the inverted pendulum on a cart problem is a surrogate model for a more complicated dynamical system. NASA has published research showing how the inverted pendulum on a cart problem acts as a rocket in flight and the derived controller can be used to design a control law for a launch vehicle. Finally, the most widely used application of the inverted pendulum on a cart problem is in academia where academics mentor their students in a variety of controls topics using the non-stable but controllable dynamics system to highlight keep concepts in controls engineering.\\
+The inverted pendulum on a cart problem is an interesting engineering problem for a multitude of reasons. It serves as the basis for both real and surrogate systems. Companies such as Segway\texttrademark{} have a self-balancing system marketed as a personal transportation device for urban environments. In this instance, the inverted pendulum on a cart has been actualized into a physical product and sold to the masses. However, the more common realization of the inverted pendulum on a cart problem is a surrogate model for a more complicated dynamical system. NASA has published research showing how the inverted pendulum on a cart problem acts as a rocket in flight and the derived controller can be used to design a control law for a launch vehicle. Finally, the most widely used application of the inverted pendulum on a cart problem is in academia where academics mentor their students in a variety of controls topics using the non-stable but controllable dynamics system to highlight key concepts in controls engineering.\\
 
-This report follows in the latter example of the utilization for the inverted pendulum on a cart. The inverted pendulum on a cart is the dynamical system for the University of Alabama ME 577: Advanced Linear Control course final project. Contained within this report, the read will find a derivation and linearization of the dynamical system, two controller designs and finally some system response analysis testing the controllers.
+This report follows in the latter example of the utilization for the inverted pendulum on a cart. The inverted pendulum on a cart is the dynamical system for the University of Alabama ME 577: Advanced Linear Control course final project. Contained within this report, the reader will find a derivation and linearization of the dynamical system, two controller designs and finally some system response analysis testing the controllers.
 
+\newpage
 \section{Dynamics Derivation}
 To start the derivation of the equations of motion, we first need to split the inverted pendulum on a cart into separate components and draw a free body diagram of each.
 
 \begin{figure}[H]
 \center
-\includegraphics[width=10cm, height=5cm]{free_body_diagram.png}
+\includegraphics[width=5cm, height=5cm]{prompt_diagram.png}
 \caption{Free Body Diagrams of Individual Components}
 \end{figure}
 
-As shown in Figure 1, the individual forces action on the cart are the weight, an external control force, a friction damping force, the normal force from the road and a tension force from the rod connecting the pendulum to the cart. The only forces acting on the pendulum are the same rod tension force and the weight of the pendulum. To first step will be to sum all the forces along each coordinate axis for the cart and pendulum.\\
+\begin{figure}[H]
+\center
+\includegraphics[width=1\linewidth]{free_body_diagram.png}
+\caption{Free Body Diagrams of Individual Components}
+\end{figure}
+
+As shown in Figure 1, the individual forces act on the cart are the weight, an external control force, a friction damping force, the normal force from the road and a tension force from the rod connecting the pendulum to the cart. The only forces acting on the pendulum are the same rod tension force and the weight of the pendulum. The first step will be to sum all the forces along each coordinate axis for the cart and pendulum.\\
 
 \underline{Cart Forces:}
 \begin{equation}
@@ -95,7 +102,7 @@ where \(a_p\) is the desired acceleration of the pendulum, \(a_c\) is the accele
 
 \begin{figure}[H]
 \center
-\includegraphics[width=8cm, height=8cm]{rotating_frame.png}
+\includegraphics[width=5cm, height=5cm]{rotating_frame.png}
 \caption{Pendulum Rotating Coordinate System}
 \end{figure}
 
@@ -185,7 +192,7 @@ The desire is to express the accelerations only in terms of the state variables.
 \ddot{\theta} = -\frac{b}{L\left(2m_{p} + M_{c}\right)}\dot{x} + \left[\frac{g}{L} - \frac{m_{p}g}{2m_{p} + M_{c}}\right]\theta - \frac{1}{L\left(2m_{p} + M_{c}\right)}f_{c}\left(t\right)
 \end{equation}
 
-We now have two equations (9) and (10) that represent the linearize decoupled dynamics of the system that are only a function of the state variables and the input control force.
+We now have two equations (9) and (10) that represent the linearized decoupled dynamics of the system that are only a function of the state variables and the input control force.
 
 \subsection{State Space Respresentation}
 
@@ -237,21 +244,55 @@ x\\
 \end{bmatrix} f_{c}\left(t\right)
 \end{equation}
 
-Before showing the controller designs, it is meaningful to show the initial system response from equilibrium inital conditions given a small disturbance of a unit step and a unit impulse.
+Before showing the controller designs, it is meaningful to show the initial system response from equilibrium given a set of inital conditions and a small disturbance of a unit step or a unit impulse.
 
 \begin{figure}[H]
 \center
-\includegraphics[width=15cm, height=9cm]{uncontrolled_unit_step.png}
+\includegraphics[width=1\linewidth]{uncontrolled_unit_step.png}
 \caption{Uncontrolled Inverted Pendulum on Cart Unit Step Simulation}
 \end{figure}
 
 \begin{figure}[H]
 \center
-\includegraphics[width=15cm, height=9cm]{uncontrolled_unit_impulse.png}
+\includegraphics[width=1\linewidth]{uncontrolled_unit_impulse.png}
 \caption{Uncontrolled Inverted Pendulum on Cart Unit Impulse Simulation}
 \end{figure}
 
 Figures 4 and 5 show that the motion diverges greatly after just a few seconds of simulation due to a unit disturbance. This demonstrates via simulation that the system is not stable and an active controller is necessary to stabilize the system.
+
+Plugging in the values for the systems yeilds the following matrices:
+
+\begin{equation}
+	\textbf{A} = \begin{bmatrix}
+		0 & 1 & 0 & 0\\
+		0 & 0.0862 & 1.1828 & 0\\
+		0 & 0 & 0 & 1\\
+		0 & -0.0663 & 6.3557 & 0\\
+		\end{bmatrix}
+	\quad\quad\quad
+	\textbf{B} = \begin{bmatrix}
+		0 \\
+		0.3448 \\
+		0 \\
+		-0.2653 \\
+		\end{bmatrix}
+	\quad\quad\quad
+	\textbf{C} = \begin{bmatrix}
+		1 & 0 & 0 & 0\\
+		0 & 1 & 0 & 0\\
+		0 & 0 & 1 & 0\\
+		0 & 0 & 0 & 1\\
+		\end{bmatrix}
+	\quad\quad\quad
+	\textbf{D} = \begin{bmatrix}
+	0\\
+	0\\
+	0\\
+	0\\
+	\end{bmatrix}
+\end{equation}
+
+The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They were directly derived earlier in this section. We choose the \textbf{C} matrix to be equal to identify because we believe there is a set of commerical sensors that exist where all the states can be directly observed as an output. GPS can be used to directly measure both position and velocity while a gyroscope can be used to measure angular rate. To get a measurement of the angular displacement the angular rate could be filtered and integrated by an inertial navigation system. Products such as the VectorNav VN-200 would be able to provide the position, velocity, anglur displacement and the angular rate if properly configured prior to integration into the test article. The \textbf{D} is set to zero, becuase the output is not a function of the input.
 
 \newpage
 \section{Close Loop Controller}
@@ -375,18 +416,170 @@ Figures 4 and 5 show that the motion diverges greatly after just a few seconds o
 \subsubsection{Unit Step Response}
 \begin{figure}[H]
 \center
-\includegraphics[width=15cm, height=9cm]{pole_placement_unit_step.png}
+\includegraphics[width=1\linewidth]{pole_placement_unit_step.png}
 \caption{Pole Placement Controller Unit Step Disturbance}
 \end{figure}
 
 \subsubsection{Unit Impulse Response}
 \begin{figure}[H]
 \center
-\includegraphics[width=15cm, height=9cm]{pole_placement_unit_impulse.png}
+\includegraphics[width=1\linewidth]{pole_placement_unit_impulse.png}
 \caption{Pole Placement Controller Unit Impulse Disturbance}
 \end{figure}
 
 \subsubsection{Integral Error Controller}
+
+The state feedback controller can be augmented to allow the user to command the cart to a specified position while maintaining the vertical position of the pendulum. To accomplish this, the cart position is fed back and compared against a reference input. The error signal between the user input and the actual position of the cart is used to modify the control input into the system to drive the cart to the commanded position.\par
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{cory_controller.png}
+    \caption{Integral Error Controller Block Diagram}
+    \label{fig:enter-label}
+\end{figure}
+
+The system described can be seen in 7. Here we can introduce a new state, $\zeta$, which represents the integral of the cart position error. The addition of the integrator ensures that the steady-state error will tend towards zero. The integral error term is modified with a proportional gain $K_I$, and then added to the input signal from the state feedback controller. To derive the appropriate gains using the pole placement method, it is first necessary to modify the states space equations to include the additional state $\zeta$. Referring to FIGURE X, a new state-space equation can be written as follows:
+
+\begin{equation}
+    \begin{bmatrix}
+        \mathbf{\dot x(t)} \\
+        \boldsymbol{\dot \zeta(t)}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \textbf{A} && \textbf{0} \\
+        \textbf{-C} && 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        \textbf{x(t)} \\
+        \boldsymbol{\zeta(t)}
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        \textbf{B} \\ 0
+    \end{bmatrix}
+    u(t)
+    +
+    \begin{bmatrix}
+        \textbf{0} \\ 1
+    \end{bmatrix}
+    r(t)
+\end{equation}
+
+The steady-state form of the equation can be written as:
+
+\begin{equation}
+\begin{bmatrix}
+\mathbf{\dot x(\infty)} \\
+\boldsymbol{\dot \zeta(\infty)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\textbf{A} && \textbf{0} \\
+\textbf{-C} && 0
+\end{bmatrix}
+\begin{bmatrix}
+\boldsymbol{x(\infty)} \\
+\boldsymbol{\zeta(\infty)}
+\end{bmatrix}
++
+\begin{bmatrix}
+\textbf{B} \\ 0
+\end{bmatrix}
+u(\infty)
++
+\begin{bmatrix}
+\textbf{0} \\ 1
+\end{bmatrix}
+r(\infty)
+\end{equation}
+
+Here x($\infty$), $\zeta(\infty$), and u($\infty$) are the constant steady-state values. If we assume r(t) to be a step input applied at t = 0, then r($\infty$) = r(t) for all t. Using this fact, we can subtract the previous two equations to eliminate the reference input term and bring us closer to a form that can be used to determine appropriate feedback gain values. Defining new terms, we can come up with the following equations:
+\begin{equation}
+   \textbf{e} = 
+   \begin{bmatrix}
+       \mathbf{x(\infty) - x(t)} \\ \boldsymbol{\zeta(\infty)-\zeta(t)}
+   \end{bmatrix}   
+\end{equation}
+
+\begin{equation}
+   u_{e} = u(\infty) - u(t)
+\end{equation}
+
+\begin{equation}
+    \mathbf{\hat{A}} = 
+    \begin{bmatrix}
+        \textbf{A} && \textbf{0}\\
+        \textbf{-C} && 0
+    \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    \mathbf{\hat{B}} = 
+    \begin{bmatrix}
+        \textbf{B}\\
+        0
+    \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    \mathbf{\dot e} = \mathbf{\hat{A}e} + \mathbf{\hat{B}u}
+\end{equation}
+
+Now defining the input, $u_e$, as
+
+\begin{equation}
+    u_{e} = \mathbf{-K(x(\infty) - x(t))} + K_{I}(\mathbf{\zeta(\infty)-\zeta(t))}
+\end{equation}
+
+and
+
+\begin{equation}
+    \mathbf{\hat{K}} = 
+    \begin{bmatrix}
+        \textbf{K} && -K_{I}
+    \end{bmatrix}
+\end{equation}
+
+we come up with our equation that can be used for finding the feedback gains using the pole placement method.
+
+\begin{equation}
+    \mathbf{\dot e} = \mathbf{(\hat{A}-\hat{B}\hat{K)}e}
+\end{equation}
+
+The controllability matrix using the new state matrices can be used to determine the controllability for the new system.
+
+\begin{equation}
+    \textbf{P} = 
+    \begin{bmatrix}
+        \textbf{B} && \textbf{AB} && \textbf{A}^2\textbf{B} && \textbf{A}^3\textbf{B} && \textbf{A}^4\textbf{B}
+    \end{bmatrix}
+\end{equation}
+
+Since the rank of the controllability matrix is 5, the newly formed is completely state controllable and the pole placement method can be used to determine the feedback gains. These gains were determined by using a fifth-order Bessel polynomial with roots equating to an approximately one second settling time and the pole placement function in MATLAB. The gain values were then incorporated into the following state-space representation of the original system.
+
+\begin{equation}
+\begin{bmatrix}
+\mathbf{\dot x(t)} \\
+\boldsymbol{\dot \zeta(t)}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\textbf{A}-\textbf{BK} && \textbf{B}K_{I} \\
+-\textbf{C} && 0
+\end{bmatrix}
+\begin{bmatrix}
+\textbf{x} \\
+\boldsymbol{\zeta}
+\end{bmatrix}
++
+\begin{bmatrix}
+\textbf{0} \\ 1
+\end{bmatrix}
+r
+\end{equation}
+
+The system was given a unit step input that was equivalent to a cart position of 5 meters. The displacement and pendulum angle response can be seen in the following figures. The cart position is shown to settle at the commanded value of 5 meters after a little over a second. The system remains stable as the pendulum stabilizes back to its equilibrium position at steady-state.
+
 \begin{figure}[H]
 \center
 \includegraphics[width=15cm, height=9cm]{pole_placement_integral_error.png}
@@ -394,15 +587,99 @@ Figures 4 and 5 show that the motion diverges greatly after just a few seconds o
 \end{figure}
 
 \subsection{LQR}
+
+The concept of LQR, first introduced by Rudolf Kalman in 1960, is a control method that has been successfully applied to many systems. An LQR controller can stabilize an unstable system, such as the inverted pendulum, by minimizing a cost function or performance index, “J”, where:
+\begin{equation}
+J = \int_{0}^{\infty} \left( -\frac{d}{dt}\left(\vec(x)^{t}\textbf{P}\vec{x}\right)\right)dt = -\vec{x}^{T}\textbf{P}\vec{x}\biggr\rvert_{0}^{\infty}=\vec{x}^{T}\left(0\right)\textbf{P}\vec{x}\left(0\right)
+\end{equation}
+
+The \textbf{Q} matrix is a weighting matrix that penalizes deviation from reference states. The \textbf{R} matrix penalizes control effort. Using matrices \textbf{Q} and \textbf{R}, the Riccati equation below can be solved to obtain matrix \textbf{P}.
+
+\begin{equation}
+\textbf{A}\textbf{P} + \textbf{P}\textbf{A}^{T} – \textbf{P}\textbf{B}^{T}\textbf{R}^{-1}\textbf{B}\textbf{P} + \textbf{Q} = \begin{bmatrix} \textbf{0}\\\end{bmatrix}
+\end{equation}
+
+The optimum feedback gain matrix, \textbf{K}, can subsequently be calculated from equation (26):
+
+\begin{equation}
+\textbf{K} = -\textbf{R}^{-1}\textbf{B}^{T}\textbf{P}
+\end{equation}
+
+To achieve optimal stability and performance, correct selection of weighting matrices \textbf{Q} and \textbf{R} is essential. The conventional approach is trial and error using knowledge of the system. The higher the order of the system, the more challenging it becomes to correctly assign weights. Optimization techniques have long been investigated by researchers.\\
+
+For this project, it was desired to design the LQR controller based on such research, as opposed to simply using a trial-and-error method. Optimization techniques such as Particle Swarm Optimization, Genetic Algorithms, and Artificial Bee Colony were investigated through paper searches. Ultimately, a research paper by Erkol entitled ‘Linear Quadratic Regulator Design for Position Control of an Inverted Pendulum by Grey Wolf Optimizer (GWO)’ was not only found to be appropriate but also transpired to be a fascinating approach to considering the inverted pendulum problem.\\
+
+Per Erkol, the GWO is inspired from the Grey Wolf in nature. In a Grey Wolf pack, there are four levels called Alpha, Beta, Delta and Omega. The Alpha Wolf is the group leader and is the most dominant wolf in the pack. The Alpha may not be the most powerful member of the group but it is the best at managing. The Beta Wolf helps the Alpha and is the second in command. They also give feedback to Alpha about the other wolves. The Delta wolves are responsible for hunting, scouting, sentineling, etc. The Omega wolves are at the end of the hierarchy. They always do as the dominant wolves say. They are the last wolves allowed to eat.\\
+
+A mathematical model of the wolf pack social hierarchy and hunting behavior, along with the search, encircling and attacking strategy, allows a GWO algorithm to be created. Through successful implementation of the GWO to the inverted pendulum problem, Erkol created the following weighted matrices:
+
+\begin{equation}
+		\textbf{Q}=\begin{bmatrix}
+			3.471E6 & 0 & 0 & 0\\
+			0 & 4.91E3 & 0 & 0\\
+			0 & 0 & 3.54E-4 & 0\\
+			0 & 0 & 0 & 1.11E4\\
+		\end{bmatrix}
+		\quad\quad\quad\textbf{R} =
+		\begin{bmatrix}
+			8779.759
+		\end{bmatrix}
+\end{equation}
+
+Although the parameters of Erkol’s system did not perfectly match those assigned in this project, Erkol’s \textbf{Q} and \textbf{R} matrices were used to good effect. This selection in both \textbf{Q} and \textbf{R} yield the results in the following section for a unit step and unit impulse. Then in the final section, the LQR controller is compared to the pole placement method controller for a larger perturbation.
+
 \subsubsection{Unit Step Response}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=16cm, height=8cm]{lqr_unit_step.png}
+\caption{LQR Controller Unit Step Disturbance}
+\end{figure}
+
 \subsubsection{Unit Impulse Response}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=16cm, height=8cm]{lqr_unit_impulse.png}
+\caption{LQR Controller Unit Impulse Disturbance}
+\end{figure}
 
 \newpage
 \section{Response Analysis}
 
 \subsection{Low Frequency Sinusoid Response}
+To test the robustness of these controller designs we simulated the response of the system to a low frequency sinusoidal input with an amplitude of 100  and a frequency of 100 Hz .
+The results of this simulation can be seen in the following figures.
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{low_frequency_sine.png}
+    \caption{Low Frequency Sinusoidal Response}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{eddie_fig_1.png}
+    \caption{Low Frequency Sinusoidal Response}
+    \label{fig:enter-label}
+\end{figure}
+
+These figures show that while these controllers were not specifically designed to handle a sinusoidal input, they are robust enough to stabilize the system. The settling time for the pendulum arm to achieve asymptotic stability at the unstable equilibrium point of 90° was slightly slower, but still within the same ~2–4 second timeframe demonstrated by these controllers when impulse, step, and ramp inputs were introduced. The system was also able to achieve asymptotic stability for cart displacement in the same ~3–5 second timeframe as when impulse and step inputs were introduced but was once again slightly slower. Also, the system was able to stabilize without introducing the displacement creep present when a ramp input is applied.\\
+
+However, these controllers were only able to achieve marginal stability for both displacement rate and angular rate. This finding is logical as periodic adjustments to these states are necessary to offset the effects of the periodic sinusoidal input function.  Marginal stability for these states was achieved slightly slower than asymptotic stability was achieved for impulse and ramp inputs but were slightly faster than when a step input was applied, with all systems reaching stability in ~1.5–5 seconds. The displacement rate for the cart was roughly bounded between 0.053 m/s and -0.053 m/s while angular rate for the pendulum arm was bounded between 2.34 deg/s and -2.34 deg/s for both controllers.\\
 
 \subsection{High Frequency Sinusoid Response}
+
+To test the limits of these controllers we simulated the response of the system to a high frequency sinusoidal input with an amplitude of 100  and a frequency of 1000 Hz . The results of this simulation can be seen in Figure 10.
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{high_freq_sine.png}
+    \caption{Low Frequency Sinusoidal Response}
+    \label{fig:enter-label}
+\end{figure}
+
+This figure shows that the controllers had more difficulty stabilizing the system with a high frequency input, especially the LQR controller. The high oscillation rate of the input signal did not trigger a significate controller response until roughly 50 seconds after the simulation began, likely due to it taking that long for the input to induce a large enough harmonic disturbance to require a significate controller response.  Before this event, the controllers only reacted with small response signals which did not stabilize the system and induced displacement creep in the LQR controlled system. After this event the pole placement controller showed relatively strong performance by asymptotically stabilizing the cart displacement and pendulum angle positions in ~2 seconds, slightly faster than its performance with impulse and step inputs and it did not display the displacement creep introduced by ramp inputs. In contrast, the LQR controller introduced a creep to the cart displacement state variable and only achieved marginal stability for the pendulum arm angle position after ~27 seconds  and displayed a complex harmonic  response. However, the amplitude of this harmonic response was less than 1E-10 degrees.\\
+
+Both controllers were only capable of achieving predominantly marginally stable displacement rates and angular rates, which again is logical for this scenario. The displacement rate and angular rate response of the pole placement controller stabilized in ~2 seconds, similar to the responses of this controller to impulse, step, and ramp inputs, however these responses now displayed complex harmonic frequencies. The LQR controller stabilized in ~3 seconds for the displacement rate and angular rate, also similar to its response to impulse, step, and ramp inputs, but with harmonic response frequencies mirroring the angle position response. The displacement rate for the cart with the pole placement controller was roughly bounded between 10.9*E-12 m/s and -8.93*E-12 m/s. However, upon inspection the bounds of the pole placement controller’s angular rate and the LQR controller’s displacement rate and angular rate showed a slight increase in magnitude overtime, indicating instability. The increase was significantly small; ~5.3E-12 for the pole placement controller angular rate, ~3E-12 for the LQR displacement rate, ~2.2E-10 for the LQR angular rate, but was still present. Indicating that with enough time the controller would not be able to stabilize the system.
 
 \newpage
 \section{Conclusion}

@@ -21,7 +21,8 @@ poleScalarTwo = 10;
 % Sim Time Vector
 timeVec = 0:1E-3:100;
 
-% System Response Parameters
+%% System Response Parameters
+% Pole Placement and LQR Knobs
 pertTime = 1;
 stepAmp = 100;
 nonUnitImpulseAmp = 100;
@@ -151,7 +152,7 @@ KI = -gainMatrix(5);
 cartPosition = 5;
 
 % Define periodic input disturbance amplitude and frequency
-periodicDisturbanceAmp = 2;
+periodicDisturbanceAmp = 100;
 periodicDisturbanceFreq = 10;
 
 % Define impulse input disturbance amplitude
