@@ -60,7 +60,7 @@
 
 \newpage
 \section{Introduction}
-The inverted pendulum on a cart problem is an interesting engineering problem for a multitude of reasons. It serves as the basis for both real and surrogate systems. Companies such as Segway\texttrademark{} have a self-balancing system marketed as a personal transportation device for urban environments. In this instance, the inverted pendulum on a cart has been actualized into a physical product and sold to the masses. However, the more common realization of the inverted pendulum on a cart problem is a surrogate model for a more complicated dynamical system. NASA has published research showing how the inverted pendulum on a cart problem acts as a rocket in flight and the derived controller can be used to design a control law for a launch vehicle. Finally, the most widely used application of the inverted pendulum on a cart problem is in academia where academics mentor their students in a variety of controls topics using the non-stable but controllable dynamics system to highlight key concepts in controls engineering.\\
+The inverted pendulum on a cart problem is an interesting engineering problem for a multitude of reasons. It serves as the basis for both real and surrogate systems. Companies such as Segway\texttrademark{} have a self-balancing system marketed as a personal transportation device for urban environments. In this instance, the inverted pendulum on a cart has been actualized into a physical product and sold to the masses. However, the more common realization of the inverted pendulum on a cart problem is a surrogate model for a more complicated dynamical system. NASA has published research showing how the inverted pendulum on a cart problem acts as a rocket in flight and the derived controller can be used to design a control law for a launch vehicle[5]. Finally, the most widely used application of the inverted pendulum on a cart problem is in academia where academics mentor their students in a variety of controls topics using the non-stable but controllable dynamics system to highlight key concepts in controls engineering.\\
 
 This report follows in the latter example of the utilization for the inverted pendulum on a cart. The inverted pendulum on a cart is the dynamical system for the University of Alabama ME 577: Advanced Linear Control course final project. Contained within this report, the reader will find a derivation and linearization of the dynamical system, two controller designs and finally some system response analysis testing the controllers.
 
@@ -80,7 +80,7 @@ To start the derivation of the equations of motion, we first need to split the i
 \caption{Free Body Diagrams of Individual Components}
 \end{figure}
 
-As shown in Figure 1, the individual forces act on the cart are the weight, an external control force, a friction damping force, the normal force from the road and a tension force from the rod connecting the pendulum to the cart. The only forces acting on the pendulum are the same rod tension force and the weight of the pendulum. The first step will be to sum all the forces along each coordinate axis for the cart and pendulum.\\
+As shown in Figure 1, the individual forces act on the cart are the weight, an external control force, a friction damping force, the normal force from the road and a tension force from the rod connecting the pendulum to the cart. The only forces acting on the pendulum are the same rod tension force and the weight of the pendulum. The first step will be to sum all the forces along each coordinate axis for the cart and pendulum[2].\\
 
 \underline{Cart Forces:}
 \begin{equation}
@@ -88,13 +88,13 @@ As shown in Figure 1, the individual forces act on the cart are the weight, an e
 \end{equation}
 \[ \sum{}{F_{\hat{j}}} = f_{c}\left(t\right) = N - M_{c}g + - T\sin{\theta} = M_{c}\ddot{y}=0 \]
 
-Since the cart is not able to travel in the \(\hat{j}\) direction, the second force summation equation for the cart is mainly shown for completeness. It will be unused in the derivation. If we were interested in quantifying the Normal force acting up on the cart from the road we would use it, however that is not necessary.\\
+Since the cart is not able to travel in the \(\hat{j}\) direction, the second force summation equation for the cart is mainly shown for completeness. It will be unused in the derivation. If we were interested in quantifying the Normal force acting up on the cart from the road we would use it, however that is not necessary[2].\\
 
 \underline{Pendulum Forces:}
 \[ \sum{}{F_{\hat{i}}} = -T\cos{\theta} = m_{p}a_{p_{x}}\]
 \[ \sum{}{F_{\hat{j}}} =  -T\sin{\theta} -m_{p}g = m_{p}a_{p_{y}} \]
 
-In the pendulum equations, a new term has been identified, \(a_{p}\) which acts in both the \(\hat{i}\) and the \(\hat{j}\) directions. This is the acceleration of the pendulum and becomes a force when multiplied by the mass of the pendulum. To compute the acceleration of the pendulum we will use the following equation:
+In the pendulum equations, a new term has been identified, \(a_{p}\) which acts in both the \(\hat{i}\) and the \(\hat{j}\) directions. This is the acceleration of the pendulum and becomes a force when multiplied by the mass of the pendulum[2]. To compute the acceleration of the pendulum we will use the following equation:
 
 \[a_p = a_c + a_{p/c}\]
 
@@ -106,7 +106,7 @@ where \(a_p\) is the desired acceleration of the pendulum, \(a_c\) is the accele
 \caption{Pendulum Rotating Coordinate System}
 \end{figure}
 
-To compute the desired acceleration, we will use kinematics and start with a position definition for the pendulum in the rotating frame and then take two derivatives using the transport theorem to compute the relative acceleration back to the inertial frame.
+To compute the desired acceleration, we will use kinematics and start with a position definition for the pendulum in the rotating frame and then take two derivatives using the transport theorem to compute the relative acceleration back to the inertial frame[6].
 
 \[r = L\hat{e_{r}}\]
 \[\dot{r}^{n} = \dot{r}^{b} + \omega_{p/c} \times r = L\dot{\theta}\hat{e_{\theta}}\]
@@ -132,7 +132,7 @@ Equation two will now be inserted into the previously defined equations for the 
 \sum{}{F_{\hat{j}}} = -T\sin{\theta} - m_{p}g = m_{p}L\ddot{\theta}\cos{\theta} - m_{p}L\dot{\theta}^{2}\sin{\theta}
 \end{equation}
 
-As you can see, equations one, three and four all have a variable T representing the tension force between the connecting rod for the cart and pendulum. We need to remove this variable from the equations. To do this, we will first multiple equation (3) by \(\sin{\theta}\) and equation (4) by \(\cos{\theta}\) and then subtract the two equations.
+As you can see, equations one, three and four all have a variable T representing the tension force between the connecting rod for the cart and pendulum. We need to remove this variable from the equations. To do this, we will first multiply equation (3) by \(\sin{\theta}\) and equation (4) by \(\cos{\theta}\) and then subtract the two equations.
 
 \[-T\cos{\theta}\sin{\theta} = m_{p}\ddot{x}\sin{\theta} - m_{p}L\ddot{\theta}\sin{\theta}^2 - m_{p}L\dot{\theta}^{2}\cos{\theta}\sin{\theta}\]
 \[-T\sin{\theta}\cos{\theta} - m_{p}g\cos{\theta} = m_{p}L\ddot{\theta}\cos{\theta}^2 - m_{p}L\dot{\theta}^{2}\cos{\theta}\sin{\theta}\]
@@ -182,7 +182,7 @@ Similarly, the same linearization process is done on equation (7).
 \[\left[m_{p} + M_{c}\right] \ddot{x} = f_{c}\left(t\right) + m_{p}L\ddot{\theta} + b\dot{x}\]
 
 \begin{equation}
-\ddot{x} = \frac{b}{2m_{p} + M_{c}}\dot{x} + \frac{m_{p}g}{2m_{p} + M_{c}}\theta + frac{1}{2m_{p} + M_{c}}f_{c}\left(t\right)
+\ddot{x} = \frac{b}{2m_{p} + M_{c}}\dot{x} + \frac{m_{p}g}{2m_{p} + M_{c}}\theta + \frac{1}{2m_{p} + M_{c}}f_{c}\left(t\right)
 \end{equation}
 
 Equation (9) represents the decoupled linear acceleration of the system. However, equation (8) which is the angular acceleration is still a function of the linear acceleration.
@@ -194,7 +194,7 @@ The desire is to express the accelerations only in terms of the state variables.
 
 We now have two equations (9) and (10) that represent the linearized decoupled dynamics of the system that are only a function of the state variables and the input control force.
 
-\subsection{State Space Respresentation}
+\subsection{State Space Representation}
 
 Using the equations developed up to this point, it is rather trivial to put the dynamical system into state space representation form.
 Equation (11) and (12) show the state space representation as functions of time.
@@ -292,11 +292,11 @@ Plugging in the values for the systems yeilds the following matrices:
 	\end{bmatrix}
 \end{equation}
 
-The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They were directly derived earlier in this section. We choose the \textbf{C} matrix to be equal to identify because we believe there is a set of commerical sensors that exist where all the states can be directly observed as an output. GPS can be used to directly measure both position and velocity while a gyroscope can be used to measure angular rate. To get a measurement of the angular displacement the angular rate could be filtered and integrated by an inertial navigation system. Products such as the VectorNav VN-200 would be able to provide the position, velocity, anglur displacement and the angular rate if properly configured prior to integration into the test article. The \textbf{D} is set to zero, becuase the output is not a function of the input.
+The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They were directly derived earlier in this section. We choose the \textbf{C} matrix to be equal to identify because we believe there is a set of commercial sensors that exist where all the states can be directly observed as an output. GPS can be used to directly measure both position and velocity while a gyroscope can be used to measure angular rate. To get a measurement of the angular displacement the angular rate could be filtered and integrated by an inertial navigation system. Products such as the VectorNav VN-200 would be able to provide the position, velocity, anglar displacement and the angular rate if properly configured prior to integration into the test article. The \textbf{D} is set to zero, because the output is not a function of the input[1, 2].
 
 \newpage
 \section{Close Loop Controller}
-	First we want to compute the controllability matrix \textbf{P} and check its rank for control of the system.
+	First we want to compute the controllability matrix \textbf{P} and check its rank for control of the system[1].
 
 	\[\textbf{P} = \begin{bmatrix}
 		\textbf{A}^{0}\textbf{B} & \textbf{A}^{1}\textbf{B} & \textbf{A}^{2}\textbf{B} & \cdots & \textbf{A}^{n-1}\textbf{B}\\
@@ -321,7 +321,7 @@ The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They we
 	\[rank\left(\textbf{P}\right) = 4\]
 	Since \textbf{P} is full rank, the system is controllable.
 
-	Next we want to compute the Observability matrix \textbf{Q} and check its rank for state variables obervation of the system.
+	Next we want to compute the Observability matrix \textbf{Q} and check its rank for state variables observation of the system[1].
 
 	\[\textbf{Q} = \begin{bmatrix}
 		\textbf{C}\textbf{A}^{0}\\
@@ -372,17 +372,46 @@ The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They we
 	\[s\vec{X}\left(x\right) = \textbf{A}\vec{X}\left(s\right) + \textbf{B}\left[\vec{R}\left(s\right) - \textbf{K}\vec{X}\left(s\right)\right]\]
 	\[s\vec{X}\left(x\right) = \left[\textbf{A} - \textbf{B}\textbf{K}\right]\vec{X}\left(s\right) + \textbf{B}\vec{R}\left(s\right)\]
 
-	\textbf{TODO:} Discuss how the closed loop eigen values are calculated.
+	The process to choose the control gain matrix \textbf{K} is based on the desired eigenvalues of the closed-loop system. In lieu of using a trial and error method of testing different eigenvalues, we decided to compute an initial starting set of eigenvalues and then modify if needed to better control the system. The computational method of the initial eignenvalues is based on the desired damping ratio of the system and the natural frequency. To compute these two quantities, first the percent overshoot, settling time and settling error were defined[7, 8].
 
-	Define the characteristic equation to compute \textbf{K}.
-	\[\left| s\textbf{I} - \left(\textbf{A} - \textbf{B}\textbf{K}\right)\right| = s^{n} + \left(k_{n}+a_{n-1}\right)s^{n-1}+ \cdots +\left(k_{2}+a_{1}\right)s+\left(k_{1}+a_{0}\right)\]
-	For our system:
-	\[\left| s\textbf{I} - \left(\textbf{A} - \textbf{B}\textbf{K}\right)\right| = s^{4}+ \left(k_{4}+a_{3}\right)s^{3} + \left(k_{3}+a_{2}\right)s^{2}+ \left(k_{2}+a_{1}\right)s+\left(k_{1}+a_{0}\right)\]
-	where
-	\[\alpha\left(s\right) = s^{n} + \alpha_{n-1}s^{n-1}+ \cdots +\alpha_{1}s+\alpha_{0}\]
-	\[k_{n} = \alpha_{n-1} - a_{n-1}\]
-	\[\alpha\left(s\right) = s^{4} + \alpha_{3}s^{3}+ \alpha_{2}s^{2} + \alpha_{1}s +\alpha_{0} = \left(s+\lambda_{1}\right)\left(s+\lambda_{2}\right)\left(s+\lambda_{3}\right)\left(s+\lambda_{4}\right)\]
-	\[s^{4} + \alpha_{3}s^{3} + \alpha_{2}s^{2} + \alpha_{1}s +\alpha_{0} =\left(s^3+12s^2+47s+60\right)\]
+
+\begin{equation}
+\zeta = \frac{-\ln{\left(\frac{P.O.}{100}\right)}}{\sqrt{\pi^2+ \frac{P.O.}{100}}}=0.7293
+\end{equation}
+
+In equation (14), P.O. is the desired percent overshoot and is a number bound between 0 and 100, which is why it is divided by 100. As you can see in equation (14), the damping ratio is only a function of the desired percent overshoot.\\
+
+To compute the natural frequency, we will use the following equation which is a function of the settling error, setting time and the damping ratio previously computed[6, 7].
+
+\begin{equation}
+\omega_{n} = \frac{-\ln\left(\frac{err}{100}\right)}{t_{settle} * \zeta}=5.3644
+\end{equation}
+
+Next, we will use the characteristic equation for the Integral of Time Absolute Error definition to compute the eigenvalues. ITAE is a function of the natural frequency as shown in the preceding equation.
+The optimal coefficients for the ITAE characteristic equation were given in lecture notes and presented here[7, 8].
+
+\begin{equation}
+s^{4} + 2.1s^{3} + 4.3s^{2} + 2.7\omega_{n}s + \omega_{n}^2
+\end{equation}
+
+Plugging in the natural frequency from equation (15) into equation (16) and solving for the roots yields the desired pole locations. The characteristic equation is a fourth order system which could yield up to four unique roots of which there could be a complex conjugate pair. An algorithm was written that will pull the most negative real root and then apply scalar multiples to  increase its distance away from the right-hand plane and unstable region. After consulting several resources it was determined to multiply the real component of the complex conguate by a factor of 5 and 10. These seem to be a bit arbitrary but appear to work well in testing. The desired poles of the closed loop control system are:
+
+\begin{equation}
+	p_1 = -1.9815+0.9606i;\quad\quad
+	p_2 = -1.9815-0.9606i;\quad\quad
+	p_3 = -10;\quad\quad
+	p_4 = -20;\quad\quad
+\end{equation}
+
+
+The place() method in Matlab solves the Ackerman equation for the close loop controller gains using the desired pole location and the \textbf{A} and \textbf{B} matrices. Ackerman's equation is included for compelteness, however, the resulting gain matrix as computed by Matlab is shown below[7, 8]:
+
+\begin{equation}
+\textbf{K} = \begin{bmatrix}0 & 0 & 0 & 1\\\end{bmatrix}\textbf{P}^{-1}\alpha\left(A\right)
+\end{equation}
+
+In equation (18), 
+\(\alpha\left(\textbf{A}\right)\) is the desired eigenvalue locations characteristic equation with the \textbf{A} substituted in and multiplied by each coefficient.
 
 	\[\textbf{K} = \begin{bmatrix}
 		k_1\\
@@ -390,10 +419,10 @@ The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They we
 		k_3\\
 		k_3\\
 	\end{bmatrix} = \begin{bmatrix}
-		1\\
-		2\\
-		3\\
-		4\\
+		-387.1099\\
+		-374.1870\\
+		-1747.7712\\
+		-614.8090\\
 	\end{bmatrix}\]
 
 	Below is a snippet of the code used to compute the \textbf{K} gain matrix using MATLAB:
@@ -429,7 +458,7 @@ The \textbf{A} matrix and \textbf{B} matrix are pretty straight forward. They we
 
 \subsubsection{Integral Error Controller}
 
-The state feedback controller can be augmented to allow the user to command the cart to a specified position while maintaining the vertical position of the pendulum. To accomplish this, the cart position is fed back and compared against a reference input. The error signal between the user input and the actual position of the cart is used to modify the control input into the system to drive the cart to the commanded position.\par
+The state feedback controller can be augmented to allow the user to command the cart to a specified position while maintaining the vertical position of the pendulum. To accomplish this, the cart position is fed back and compared against a reference input. The error signal between the user input and the actual position of the cart is used to modify the control input into the system to drive the cart to the commanded position[7, 8].\par
 
 \begin{figure}[h]
     \includegraphics[width=1\linewidth]{cory_controller.png}
@@ -437,7 +466,7 @@ The state feedback controller can be augmented to allow the user to command the 
     \label{fig:enter-label}
 \end{figure}
 
-The system described can be seen in 7. Here we can introduce a new state, $\zeta$, which represents the integral of the cart position error. The addition of the integrator ensures that the steady-state error will tend towards zero. The integral error term is modified with a proportional gain $K_I$, and then added to the input signal from the state feedback controller. To derive the appropriate gains using the pole placement method, it is first necessary to modify the states space equations to include the additional state $\zeta$. Referring to FIGURE X, a new state-space equation can be written as follows:
+The system described can be seen in equation (8). Here we can introduce a new state, $\zeta$, which represents the integral of the cart position error. The addition of the integrator ensures that the steady-state error will tend towards zero. The integral error term is modified with a proportional gain $K_I$, and then added to the input signal from the state feedback controller. To derive the appropriate gains using the pole placement method, it is first necessary to modify the states space equations to include the additional state $\zeta$. Referring to figure 8, a new state-space equation can be written as follows[7, 8]:
 
 \begin{equation}
     \begin{bmatrix}
@@ -493,7 +522,7 @@ u(\infty)
 r(\infty)
 \end{equation}
 
-Here x($\infty$), $\zeta(\infty$), and u($\infty$) are the constant steady-state values. If we assume r(t) to be a step input applied at t = 0, then r($\infty$) = r(t) for all t. Using this fact, we can subtract the previous two equations to eliminate the reference input term and bring us closer to a form that can be used to determine appropriate feedback gain values. Defining new terms, we can come up with the following equations:
+Here x($\infty$), $\zeta(\infty$), and u($\infty$) are the constant steady-state values. If we assume r(t) to be a step input applied at t = 0, then r($\infty$) = r(t) for all t. Using this fact, we can subtract the equation (19) from (20) to eliminate the reference input term and bring us closer to a form that can be used to determine appropriate feedback gain values. Defining new terms, we can come up with the following equations:
 \begin{equation}
    \textbf{e} = 
    \begin{bmatrix}
@@ -555,7 +584,7 @@ The controllability matrix using the new state matrices can be used to determine
     \end{bmatrix}
 \end{equation}
 
-Since the rank of the controllability matrix is 5, the newly formed is completely state controllable and the pole placement method can be used to determine the feedback gains. These gains were determined by using a fifth-order Bessel polynomial with roots equating to an approximately one second settling time and the pole placement function in MATLAB. The gain values were then incorporated into the following state-space representation of the original system.
+Since the rank of the controllability matrix is 5, the newly formed system is completely state controllable and the pole placement method can be used to determine the feedback gains. These gains were determined by using a fifth-order Bessel polynomial with roots equating to an approximately one second settling time and the pole placement function in MATLAB. The gain values were then incorporated into the following state-space representation of the original system.
 
 \begin{equation}
 \begin{bmatrix}
@@ -578,7 +607,7 @@ Since the rank of the controllability matrix is 5, the newly formed is completel
 r
 \end{equation}
 
-The system was given a unit step input that was equivalent to a cart position of 5 meters. The displacement and pendulum angle response can be seen in the following figures. The cart position is shown to settle at the commanded value of 5 meters after a little over a second. The system remains stable as the pendulum stabilizes back to its equilibrium position at steady-state.
+The system was given a unit step input that was equivalent to a cart position of 5 meters. The displacement and pendulum angle response can be seen in the following figures. The cart position is shown to settle at the commanded value of 5 meters after approximately 3 seconds. The system remains stable as the pendulum stabilizes back to its equilibrium position at steady-state.
 
 \begin{figure}[H]
 \center
@@ -588,18 +617,18 @@ The system was given a unit step input that was equivalent to a cart position of
 
 \subsection{LQR}
 
-The concept of LQR, first introduced by Rudolf Kalman in 1960, is a control method that has been successfully applied to many systems. An LQR controller can stabilize an unstable system, such as the inverted pendulum, by minimizing a cost function or performance index, “J”, where:
+The concept of LQR, first introduced by Rudolf Kalman in 1960, is a control method that has been successfully applied to many systems. An LQR controller can stabilize an unstable system, such as the inverted pendulum, by minimizing a cost function or performance index, “J”, where[4, 9]:
 \begin{equation}
 J = \int_{0}^{\infty} \left( -\frac{d}{dt}\left(\vec(x)^{t}\textbf{P}\vec{x}\right)\right)dt = -\vec{x}^{T}\textbf{P}\vec{x}\biggr\rvert_{0}^{\infty}=\vec{x}^{T}\left(0\right)\textbf{P}\vec{x}\left(0\right)
 \end{equation}
 
-The \textbf{Q} matrix is a weighting matrix that penalizes deviation from reference states. The \textbf{R} matrix penalizes control effort. Using matrices \textbf{Q} and \textbf{R}, the Riccati equation below can be solved to obtain matrix \textbf{P}.
+The \textbf{Q} matrix is a weighting matrix that penalizes deviation from reference states. The \textbf{R} matrix penalizes control effort. Using matrices \textbf{Q} and \textbf{R}, the Riccati equation below can be solved to obtain matrix \textbf{P}[4, 9].
 
 \begin{equation}
 \textbf{A}\textbf{P} + \textbf{P}\textbf{A}^{T} – \textbf{P}\textbf{B}^{T}\textbf{R}^{-1}\textbf{B}\textbf{P} + \textbf{Q} = \begin{bmatrix} \textbf{0}\\\end{bmatrix}
 \end{equation}
 
-The optimum feedback gain matrix, \textbf{K}, can subsequently be calculated from equation (26):
+The optimum feedback gain matrix, \textbf{K}, can subsequently be calculated from equation (33)[4, 9]:
 
 \begin{equation}
 \textbf{K} = -\textbf{R}^{-1}\textbf{B}^{T}\textbf{P}
@@ -607,11 +636,11 @@ The optimum feedback gain matrix, \textbf{K}, can subsequently be calculated fro
 
 To achieve optimal stability and performance, correct selection of weighting matrices \textbf{Q} and \textbf{R} is essential. The conventional approach is trial and error using knowledge of the system. The higher the order of the system, the more challenging it becomes to correctly assign weights. Optimization techniques have long been investigated by researchers.\\
 
-For this project, it was desired to design the LQR controller based on such research, as opposed to simply using a trial-and-error method. Optimization techniques such as Particle Swarm Optimization, Genetic Algorithms, and Artificial Bee Colony were investigated through paper searches. Ultimately, a research paper by Erkol entitled ‘Linear Quadratic Regulator Design for Position Control of an Inverted Pendulum by Grey Wolf Optimizer (GWO)’ was not only found to be appropriate but also transpired to be a fascinating approach to considering the inverted pendulum problem.\\
+For this project, it was desired to design the LQR controller based on such research, as opposed to simply using a trial-and-error method. Optimization techniques such as Particle Swarm Optimization, Genetic Algorithms, and Artificial Bee Colony were investigated through paper searches. Ultimately, a research paper by Erkol entitled ‘Linear Quadratic Regulator Design for Position Control of an Inverted Pendulum by Grey Wolf Optimizer (GWO)’ was not only found to be appropriate but also transpired to be a fascinating approach to considering the inverted pendulum problem[3].\\
 
-Per Erkol, the GWO is inspired from the Grey Wolf in nature. In a Grey Wolf pack, there are four levels called Alpha, Beta, Delta and Omega. The Alpha Wolf is the group leader and is the most dominant wolf in the pack. The Alpha may not be the most powerful member of the group but it is the best at managing. The Beta Wolf helps the Alpha and is the second in command. They also give feedback to Alpha about the other wolves. The Delta wolves are responsible for hunting, scouting, sentineling, etc. The Omega wolves are at the end of the hierarchy. They always do as the dominant wolves say. They are the last wolves allowed to eat.\\
+Per Erkol, the GWO is inspired from the Grey Wolf in nature. In a Grey Wolf pack, there are four levels called Alpha, Beta, Delta and Omega. The Alpha Wolf is the group leader and is the most dominant wolf in the pack. The Alpha may not be the most powerful member of the group but it is the best at managing. The Beta Wolf helps the Alpha and is the second in command. They also give feedback to Alpha about the other wolves. The Delta wolves are responsible for hunting, scouting, sentineling, etc. The Omega wolves are at the end of the hierarchy. They always do as the dominant wolves say. They are the last wolves allowed to eat[3].\\
 
-A mathematical model of the wolf pack social hierarchy and hunting behavior, along with the search, encircling and attacking strategy, allows a GWO algorithm to be created. Through successful implementation of the GWO to the inverted pendulum problem, Erkol created the following weighted matrices:
+A mathematical model of the wolf pack social hierarchy and hunting behavior, along with the search, encircling and attacking strategy, allows a GWO algorithm to be created. Through successful implementation of the GWO to the inverted pendulum problem, Erkol created the following weighted matrices[3]:
 
 \begin{equation}
 		\textbf{Q}=\begin{bmatrix}
@@ -627,6 +656,24 @@ A mathematical model of the wolf pack social hierarchy and hunting behavior, alo
 \end{equation}
 
 Although the parameters of Erkol’s system did not perfectly match those assigned in this project, Erkol’s \textbf{Q} and \textbf{R} matrices were used to good effect. This selection in both \textbf{Q} and \textbf{R} yield the results in the following section for a unit step and unit impulse. Then in the final section, the LQR controller is compared to the pole placement method controller for a larger perturbation.
+
+	Below is a snippet of the code used to compute the \textbf{K} gain matrix using MATLAB:
+	\begin{lstlisting}[style=Matlab-editor]
+		%% LQR Controller
+		lqr_q_mat = zeros(4);
+
+		% Grey Wolf Optimizer
+		lqr_q_mat(1, 1) = 3.471E6;
+		lqr_q_mat(2, 2) = 4.91E3;
+		lqr_q_mat(3, 3) = 3.54E-4;
+		lqr_q_mat(4, 4) = 1.11E4;
+
+		lqr_r = 8779.759;
+
+		[lqr_gain, lqr_s, lqr_poles] = lqr(A, B, lqr_q_mat, lqr_r);
+
+		closeLoopSysLqr = ss(A-B*lqr_gain, B, C, D);
+	\end{lstlisting}
 
 \subsubsection{Unit Step Response}
 
@@ -683,26 +730,434 @@ Both controllers were only capable of achieving predominantly marginally stable 
 
 \newpage
 \section{Conclusion}
+In conclusion, this project covers the classic control system of an inverted pendulum on a cart. The pendulum is free to rotate around its pivot point while the cart is free to traverse on its axis of travel. The desired position, and equilibrium condition of the system, is for the pendulum to be vertical. The cart is also allowed to move freely and in two of the three controllers its final position is not constrained. However, we implemented a controller that drives the cart to a final displacement and successfully demonstrated that capability in controlling the system. After the dynamical system was derived and linearized three controllers were designed. Two of the controllers used two different methods by placing poles to yield a closed-loop system. The final controller that was designed was a Linear Quadratic Regulator using the Gray Wolf Optimizer to choose the \textbf{Q} and \textbf{R} matrices. Each of these three controllers were initially designed using a unit step and unit impulse function. Once the controller met design criteria with those two inputs, further analysis was conducted to stress the system. The stressing inputs to the system were a ramp function, low frequency sinusoid and high frequency sinusoid. The ramp function results were omitted for brevity. The results from the two sinusoid inputs showed that they were not a strong function of the amplitude and need a large amplitude to get a decent response to the system. However, the frequency did drive the controller response. It was interesting to see that the periodic nature of the perturbation caused a small oscillation around the equilibrium condition yielding that the controllers did not demonstrate asymptotic stability for this equilibrium condition.
 
 \newpage
 \section{Appendix A: Source Code}
 % Cut and past matlab code here when its all done.
 \begin{lstlisting}[style=Matlab-editor]
+% Main script for ME 577 Group Final Project
 close all; clear; clc;
-%{
-ME 577: Advanced Linear Controls
-Spring 2025
-Final Project
-%}
 
-%% Start of Code ...
+%% User Inputs
+% Initial Conditions
+ICs = [0; 0; deg2rad(0); 0];
+
+% Controller Design Parameter: Percent Overshoot
+desPO = 10;
+
+% Controller Design Parameter: Settling Time
+tSettle = 1;
+
+% Controller Design Parameter: Steady State Metric
+inputPercent = 2;
+
+% Controller Design Parameter: Pole Placement Scalar Multiplier
+poleScalarOne = 5;
+poleScalarTwo = 10;
+
+% Sim Time Vector
+timeVec = 0:1E-3:100;
+
+%% System Response Parameters
+% Pole Placement and LQR Knobs
+pertTime = 1;
+stepAmp = 100;
+nonUnitImpulseAmp = 100;
+sineAmp = 100;
+sineFreqLow = 100;
+sineFreqHigh = 1000;
+
+%% System Definition -- Constants
+m = 0.35;
+M = 2.2;
+L = 1.3;
+b = 0.25;
+g = 9.8;
+
+shift = [0, 0, pi/2, 0];
+
+%% Linear EOM Simulation - Newtonian Dynamics Model
+A = zeros(4);
+A(1,2) = 1;
+A(2,2) = (b)./((2*m)+M);
+A(2,3) = (m*g)./((2*m)+M);
+A(3,4) = 1;
+A(4,2) = (-1.*b)./(L.*((2*m)+M));
+A(4,3) = (g./L) - ((m*g)./((2*m)+M));
+
+% B Matrix
+B = zeros(4,1);
+B(2,1) = (1)./((2*m)+M);
+B(4,1) = (-1)./(L.*((2*m)+M));
+
+% C Matrix
+C = eye(4);
+
+% D Matrix
+D = zeros(4, 1);
+
+% % Create a Matlab State Space Model
+linSys = ss(A,B,C,D);
+
+%%  Initial Conditions Simulation
+[yInitial, tInitial] = initial(linSys, ICs, timeVec);
+yInitial = moveOutput(yInitial, shift);
+plotStates(yInitial, tInitial, 'Uncontrolled Initial Conditions Simulation');
+
+%%  Unit Step Input Simulation
+[yStep, tStep] = step(linSys, timeVec);
+yStep = moveOutput(yStep, shift);
+plotStates(yStep, tStep, 'Uncontrolled Unit Step Simulation');
+
+%%  Unit Impulse Input Simulation
+[yImpulse, tImpulse] = impulse(linSys, timeVec);
+yImpulse = moveOutput(yImpulse, shift);
+plotStates(yImpulse, tImpulse, 'Uncontrolled Unit Impulse Simulation');
+
+%% Stability -> HW 4 type of analysis
+[eigVectors, eigValues] = eig(A);
+linSysPole = pole(linSys);
+
+%% Controlability -> HW 5 type of analysis
+P = [B, A*B, A*A*B, A*A*A*B];
+rankOfP = rank(P);
+
+%% Observability -> HW 5 type of analysis
+Q = [C;...
+    C*A;...
+    C*A*A;...
+    C*A*A*A];
+rankOfQ = rank(Q);
+
+%% Pole Placement
+zeta = (-1*log(desPO./100))/(sqrt((pi.^2) + (desPO./100)));
+wn = (-1*log(inputPercent./100))./(tSettle.*zeta);
+eqn = [1, 2.1, 3.4, 2.7.*wn, wn.^2];
+p = roots(eqn);
+stableP = p(real(p) == min(real(p)));
+p = [stableP(1); stableP(2);...
+    floor(poleScalarOne*min(real(stableP)));...
+    floor(poleScalarTwo*min(real(stableP)))];
+
+[K, prec] = place(A, B, p);
+closeLoopA = A - (B*K);
+closeLoopSysPolePlace = ss(closeLoopA, B, C, D);
+
+%% Pole Placement Controller Design Plots
+% Unit Step Input Simulation
+[yStepPole, tStepPole] = step(closeLoopSysPolePlace, timeVec);
+yStepPole = moveOutput(yStepPole, shift);
+plotStates(yStepPole, tStepPole, 'Pole Placement Controller Unit Step Simulation');
+
+%  Unit Impulse Input Simulation
+[yImpulsePole, tImpulsePole] = impulse(closeLoopSysPolePlace, timeVec);
+yImpulsePole = moveOutput(yImpulsePole, shift);
+plotStates(yImpulsePole, tImpulsePole, 'Pole Placement Controller Unit Impulse Simulation');
+
+%% Simulink -- Integral Error Control
+% Define new A and B matrices
+cIEC = [1 0 0 0];
+Ahat = [A zeros(length(A),1); -cIEC 0];
+Bhat = [B; 0];
+
+% Check controllabilty of new system. Rank = 5 means that thes system
+% is % fully state controllable.
+P = [A, B; -cIEC, 0];
+rank(P);
+
+% Define desired eigenvalues for new 5th order system. Eigenvalues were
+% defined from values that result in a 1 second settling time
+eigDesired = [-6.4480,-4.1104+6.3142i,-4.1104-6.3142i,...
+    -5.9268+3.0813i,-5.9268-3.0813i];
+
+% Use place command to calculate gain matrix to acheive desired poles
+gainMatrix = place(Ahat,Bhat,eigDesired);
+
+% State feedback gain matrix
+K = gainMatrix(1:4);
+
+% Integral error tracking gain value
+KI = -gainMatrix(5);
+
+% Define desired cart position
+cartPosition = 5;
+
+% Define periodic input disturbance amplitude and frequency
+periodicDisturbanceAmp = 100;
+periodicDisturbanceFreq = 10;
+
+% Define impulse input disturbance amplitude
+impulseAmp = 0;
+
+% Run Simulink model
+out = sim('stateFeedbackIntegralControl.slx');
+intErrPlot(out);
+
+%% LQR Controller
+lqr_q_mat = zeros(4);
+
+% Grey Wolf Optimizer
+lqr_q_mat(1, 1) = 3.471E6;
+lqr_q_mat(2, 2) = 4.91E3;
+lqr_q_mat(3, 3) = 3.54E-4;
+lqr_q_mat(4, 4) = 1.11E4;
+
+lqr_r = 8779.759;
+
+[lqr_gain, lqr_s, lqr_poles] = lqr(A, B, lqr_q_mat, lqr_r);
+
+closeLoopSysLqr = ss(A-B*lqr_gain, B, C, D);
+
+%% LQR Controller Design Plots
+[yStepLqr, tStepLqr] = step(closeLoopSysLqr, timeVec);
+yStepLqr = moveOutput(yStepLqr, shift);
+plotStates(yStepLqr, tStepLqr, 'LQR Controller Unit Step Simulation');
+
+[yImpulseLqr, tImpulseLqr] = impulse(closeLoopSysLqr, timeVec);
+yImpulseLqr = moveOutput(yImpulseLqr, shift);
+plotStates(yImpulseLqr, tImpulseLqr, 'LQR Controller Unit Impulse Simulation');
+
+%% System Response Analysis
+% Non Unit Impulse
+nonUnitImp = genImpulseInput(timeVec, nonUnitImpulseAmp, pertTime);
+[yImpPole, tImpPole] = lsim(closeLoopSysPolePlace, nonUnitImp, timeVec);
+yImpPole = moveOutput(yImpPole, shift);
+[yImpLqr, tImpLqr] = lsim(closeLoopSysLqr, nonUnitImp, timeVec);
+yImpLqr = moveOutput(yImpLqr, shift);
+
+% Non Unit Step
+nonUnitStep = genStepInput(timeVec, stepAmp, pertTime);
+[yStepPole, tStepPole] = lsim(closeLoopSysPolePlace, nonUnitStep, timeVec);
+yStepPole = moveOutput(yStepPole, shift);
+[yStepLqr, tStepLqr] = lsim(closeLoopSysLqr, nonUnitStep, timeVec);
+yStepLqr = moveOutput(yStepLqr, shift);
+
+% Ramp
+ramp = genRampInput(timeVec, pertTime);
+[yRampPole, tRampPole] = lsim(closeLoopSysPolePlace, ramp, timeVec);
+yRampPole = moveOutput(yRampPole, shift);
+[yRampLqr, tRampLqr] = lsim(closeLoopSysLqr, ramp, timeVec);
+yRampLqr = moveOutput(yRampLqr, shift);
+
+% low freq sine
+lowFreqSine = genSinusodialInput(timeVec, pertTime, sineAmp, sineFreqLow);
+[ySinePole, tSinePole] = lsim(closeLoopSysPolePlace, lowFreqSine, timeVec);
+ySinePole = moveOutput(ySinePole, shift);
+[ySineLqr, tSineLqr] = lsim(closeLoopSysLqr, lowFreqSine, timeVec);
+ySineLqr = moveOutput(ySineLqr, shift);
+
+% high freq sine
+highFreqSine = genSinusodialInput(timeVec, pertTime, sineAmp, sineFreqHigh);
+[ySinePole2, tSinePole2] = lsim(closeLoopSysPolePlace, highFreqSine, timeVec);
+ySinePole2 = moveOutput(ySinePole2, shift);
+[ySineLqr2, tSineLqr2] = lsim(closeLoopSysLqr, highFreqSine, timeVec);
+ySineLqr2 = moveOutput(ySineLqr2, shift);
+
+%% System Response Analysis Plots
+genMultiPlot(tImpPole, yImpPole, 'Pole Placement',...
+    tImpLqr, yImpLqr, 'LQR', 'Non-Unit Impulse Disturbance Simulation')
+genMultiPlot(tStepPole, yStepPole, 'Pole Placement',...
+    tStepLqr, yStepLqr, 'LQR', 'Non-Unit Step Disturbance Simulation')
+genMultiPlot(tRampPole, yRampPole, 'Pole Placement',...
+    tRampLqr, yRampLqr, 'LQR', 'Ramp Disturbance Simulation')
+genMultiPlot(tSinePole, ySinePole, 'Pole Placement',...
+    tSineLqr, ySineLqr, 'LQR', 'Low Frequency Sine Disturbance Simulation')
+genMultiPlot(tSinePole2, ySinePole2, 'Pole Placement',...
+    tSineLqr2, ySineLqr2, 'LQR', 'High Frequency Sine Disturbance Simulation')
+
+%% Helper Functions
+function [y] = moveOutput(y, shift)
+    for ii = 1:1:size(y, 1)
+        y(ii, :) = y(ii, :) + shift;
+    end
+end
+
+function [] = plotStates(y, t, titleString)
+    figure()
+    subplot(4, 1, 1)
+    plot(t, y(:, 1), 'Linewidth', 3)
+    grid on
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Displacement [m]', 'fontweight', 'bold', 'fontsize', 14)
+    title(titleString, 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+    
+    subplot(4, 1, 2)
+    plot(t, y(:, 2), 'Linewidth', 3)
+    grid on
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Displacement Rate [m/s]', 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+
+    subplot(4, 1, 3)
+    plot(t, rad2deg(y(:, 3)), 'Linewidth', 3)
+    grid on
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Angle [deg]', 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+    
+    subplot(4, 1, 4)
+    plot(t, rad2deg(y(:, 4)), 'Linewidth', 3)
+    grid on
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Angle Rate [deg/s]', 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+end
+
+function [] = intErrPlot(out)
+    figure()
+    subplot(2, 1, 1)
+    hold on
+    plot(out.tout,out.command,'--k', 'Linewidth', 3)
+    plot(out.tout,out.position,'-r', 'Linewidth', 3)
+    hold off
+    grid on
+    legend("Commanded","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
+        'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Displacement [m]', 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+    
+    subplot(2, 1, 2)
+    hold on
+    plot(out.tout, 90.*ones(size(out.theta, 1), 1),'--k', 'Linewidth', 3)
+    plot(out.tout, rad2deg(out.theta + pi./2),'r', 'Linewidth', 3)
+    hold off
+    grid on
+    legend("Equilibrium","Cart", 'fontweight', 'bold', 'fontsize', 14, 'Location',...
+        'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Angle [deg]', 'fontweight', 'bold', 'fontsize', 14)
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel', a,'fontsize', 14)
+end
+
+function [u] = genStepInput(tVec, Amp, stepTime)
+    
+    u = NaN(size(tVec));
+
+    for ii = 1:1:length(u)
+        if tVec(ii) > stepTime
+            u(ii) = Amp;
+        else
+            u(ii) = 0;
+        end
+    end
+end
+
+function [u] = genImpulseInput(tVec, Amp, impulseTime)
+    u = NaN(size(tVec));
+
+    for ii = 1:1:length(u)
+        if tVec(ii) == impulseTime
+            u(ii) = Amp;
+        else
+            u(ii) = 0;
+        end
+    end
+end
+
+function [u] = genRampInput(tVec, timeShift)
+    u = tVec - timeShift;
+end
+
+function [u] = genSinusodialInput(tVec, timeShift, amp, freq)
+    
+    omega = freq .* 2 .* pi;
+
+    u = NaN(size(tVec));
+
+    for ii = 1:1:length(u)
+        if tVec(ii) > timeShift
+            u(ii) = amp.*sin(omega.*(tVec(ii)-timeShift));
+        else
+            u(ii) = 0;
+        end
+    end
+end
+
+function [] = genMultiPlot(t1, y1, legend_1, t2, y2, legend_2, titleString)
+    figure()
+    subplot(4, 1, 1)
+    hold on
+    plot(t1, y1(:, 1), 'Linewidth', 3)
+    plot(t2, y2(:, 1), 'Linewidth', 3)
+    grid on
+    legend(legend_1, legend_2, 'Location', 'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Displacement [m]', 'fontweight', 'bold', 'fontsize', 14)
+    title(titleString, 'fontweight', 'bold', 'fontsize', 14)
+    
+    subplot(4, 1, 2)
+    hold on
+    plot(t1, y1(:, 2), 'Linewidth', 3)
+    plot(t2, y2(:, 2), 'Linewidth', 3)
+    hold off
+    grid on
+    legend(legend_1, legend_2, 'Location', 'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Displacement Rate [m/s]', 'fontweight', 'bold', 'fontsize', 14)
+
+    subplot(4, 1, 3)
+    hold on
+    plot(t1, rad2deg(y1(:, 3)), 'Linewidth', 3)
+    plot(t2, rad2deg(y2(:, 3)), 'Linewidth', 3)
+    hold off
+    grid on
+    legend(legend_1, legend_2, 'Location', 'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Angle [deg]', 'fontweight', 'bold', 'fontsize', 14)
+    
+    subplot(4, 1, 4)
+    hold on
+    plot(t1, rad2deg(y1(:, 4)), 'Linewidth', 3)
+    plot(t2, rad2deg(y2(:, 4)), 'Linewidth', 3)
+    hold off
+    grid on
+    legend(legend_1, legend_2, 'Location', 'BestOutside')
+    xlabel('Time [sec]', 'fontweight', 'bold', 'fontsize', 14)
+    ylabel('Angle Rate [deg/s]', 'fontweight', 'bold', 'fontsize', 14)
+end
 
 \end{lstlisting}
 
 \newpage
 \section{Appendix B: Simulink}
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{simulink_mdl.png}
+    \caption{Integral Error Control Simulink Model}
+    \label{fig:enter-label}
+\end{figure}
 
 \newpage
-\section{Appendix C: Full Dynamics Derivation}
+\section{References}
+\begin{enumerate}
+
+\item{Brogan, W., \textit{Modern Control Theory}, 3rd ed., Prentice Hall, Upper Saddle River, NJ, 1991}
+
+\item{Chen, C., \textit{Linear Systems Theory and Design}, 1st ed., Oxford, New York, 1984}
+
+\item{Erkol, H., "Linear Quadratic Regulator Design for Position Control of an Inverted Pendulum by Grey Wolf Optimizer", International Journal of Advanced Computer Science and Applications, Vol 9, No 4, 2018}
+
+\item{Lavretsky, E., \& Wise, K., \textit{Robust and Adaptive Control}, 2nd ed., Springer Nature, Switzerland, 2024}
+
+\item{Pei, J., \& Rothhaar, P., "Demonstration of the Space Launch System Augmenting Adaptive Control Algorithm on Pole-Cart Platform", 2018 AIAA Guidance Navigation, and Control Conference, 8-12 January 2018, Kissimmee, Florida, https://doi.org/10.2514/6.2018-0608}
+
+\item{Schaub, H., \& Junkins, J., "Particle Kinematics",  \textit{Analytical Mechanics of Space Systems}, 3rd ed., AIAA, June 2014, pp. 1-30.}
+
+\item{Zhang, Q., "Lesson 20, Spring 2025", ME 577 University of Alabama, Spring 2025, retrieved: April 2025}
+
+\item{Zhang, Q., "Lesson 21, Spring 2025", ME 577 University of Alabama, Spring 2025, retrieved: April 2025}
+
+\item{Zhang, Q., "Lesson 25, Spring 2025", ME 577 University of Alabama, Spring 2025, retrieved: April 2025}
+
+
+\end{enumerate}
 
 \end{document}
